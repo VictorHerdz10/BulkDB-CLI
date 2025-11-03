@@ -256,16 +256,25 @@ class DataValidator:
             return False, [f"Error validando compatibilidad: {e}"]
     
     def _validate_data_type(self, value: Any, data_type: str, column_name: str) -> Optional[str]:
-        """Valida que el valor sea compatible con el tipo de dato"""
+        """Valida que el valor sea compatible con el tipo de dato REAL de PostgreSQL"""
         try:
-            if 'int' in data_type:
+            data_type_lower = data_type.lower()
+            
+            if 'int' in data_type_lower:
                 int(value)
-            elif 'numeric' in data_type or 'decimal' in data_type:
+            elif 'numeric' in data_type_lower or 'decimal' in data_type_lower:
                 float(value)
-            elif 'bool' in data_type:
-                if str(value).lower() not in ('true', 'false', '1', '0', 't', 'f', 'yes', 'no'):
+            elif 'bool' in data_type_lower:
+                # Para booleanos, aceptar True/False, 1/0, 'true'/'false'
+                if isinstance(value, bool):
+                    return None
+                elif isinstance(value, int) and value in [0, 1]:
+                    return None
+                elif isinstance(value, str) and value.lower() in ('true', 'false', 't', 'f', '1', '0'):
+                    return None
+                else:
                     return f"Valor '{value}' no es booleano válido para '{column_name}'"
-            elif 'date' in data_type or 'time' in data_type:
+            elif 'date' in data_type_lower or 'time' in data_type_lower:
                 # Validación básica de fecha
                 if not self.helpers.is_valid_date(str(value)):
                     return f"Valor '{value}' no es fecha válida para '{column_name}'"
