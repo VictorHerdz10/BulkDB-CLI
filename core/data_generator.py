@@ -5,10 +5,24 @@ from typing import Any, List, Dict, Set, Optional
 import re
 import json
 import os
+import sys
+
+def resource_path(relative_path: str) -> str:
+        """Obtiene la ruta real del recurso, compatible con PyInstaller --onefile"""
+        try:
+            # PyInstaller almacena recursos en una carpeta temporal (_MEIPASS)
+            base_path = sys._MEIPASS
+        except AttributeError:
+        # Estamos en modo desarrollo
+            base_path = os.path.abspath(".")
+        return os.path.join(base_path, relative_path)
+        
 
 class DataGenerator:
-    def __init__(self, dataset_path: str = "datasets/master_dataset.json"):
-        self.dataset_path = dataset_path
+    
+    def __init__(self, dataset_path: str = "core/datasets/master_dataset.json"):
+        # Asegúrate de que esta ruta coincida con la que usaste en datas del .spec
+        self.dataset_path = resource_path(dataset_path)
         self.master_dataset = self._load_master_dataset()
         
         self.generated_values_cache: Dict[str, Set[Any]] = {}
@@ -18,13 +32,16 @@ class DataGenerator:
     def _load_master_dataset(self) -> Dict:
         """Carga el dataset masivo desde archivo JSON"""
         try:
+            # Ahora self.dataset_path ya apunta a la ubicación correcta
             if os.path.exists(self.dataset_path):
                 with open(self.dataset_path, 'r', encoding='utf-8') as f:
                     return json.load(f)
+            else:
+                print(f"Advertencia: No se encontró el archivo de dataset en {self.dataset_path}")
         except Exception as e:
-            print(f"Error cargando dataset: {e}")
+            print(f"Error cargando dataset desde {self.dataset_path}: {e}")
         
-        # Fallback a dataset vacío si no se puede cargar
+        # Fallback seguro
         return {"base_values": {}, "generation_patterns": {}, "table_context_hints": {}}
     
     def generate_value(self, data_type: str, column_name: str, max_length: int = None, 
