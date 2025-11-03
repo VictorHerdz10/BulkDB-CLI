@@ -220,7 +220,7 @@ class CLIInterface:
         return int(count)
     
     def select_columns(self, table_name: str) -> List[str]:
-        """Permite al usuario seleccionar qué columnas poblar"""
+        """Permite al usuario seleccionar qué columnas poblar, excluyendo IDs auto-incrementales"""
         try:
             print(f"\n📋 CARGANDO COLUMNAS DE: {table_name}")
             
@@ -231,25 +231,57 @@ class CLIInterface:
                 print("❌ No se encontraron columnas en la tabla")
                 return []
             
-            # Mostrar información detallada de cada columna
+            # Identificar columnas auto-incrementales y claves primarias para excluirlas
+            auto_increment_columns = []
+            primary_key = self.db.get_primary_key(table_name)
+            
             column_choices = []
             for col in columns_info:
                 col_name, data_type, is_nullable, default, max_length, numeric_precision, numeric_scale = col
+                
+                # Detectar columnas auto-incrementales
+                is_auto_increment = (
+                    (col_name.lower() == 'id' or col_name == primary_key) and 
+                    default is not None and 'nextval' in str(default)
+                )
+                
+                # Detectar columnas ID que probablemente sean auto-incrementales
+                is_id_like = (
+                    col_name.lower() in ['id', 'uuid', 'pk_id', 'table_id'] or 
+                    col_name.endswith('_id') and col_name != primary_key
+                )
+                
+                if is_auto_increment:
+                    auto_increment_columns.append(col_name)
+                    # Excluir por defecto de la selección
+                    checked = False
+                    note = " 🔄 (Auto-incremental - Excluida)"
+                elif is_id_like and primary_key and col_name != primary_key:
+                    # Columnas ID que no son PK - preguntar al usuario
+                    checked = True
+                    note = " ⚠️ (Posible ID - Verificar)"
+                else:
+                    checked = True
+                    note = ""
                 
                 # Formatear información de la columna
                 nullable_text = "NULL" if is_nullable == 'YES' else "NOT NULL"
                 length_text = f"({max_length})" if max_length else ""
                 default_text = f" [DEFAULT: {default}]" if default else ""
                 
-                display_text = f"{col_name}: {data_type}{length_text} [{nullable_text}]{default_text}"
+                display_text = f"{col_name}: {data_type}{length_text} [{nullable_text}]{default_text}{note}"
                 
                 column_choices.append(
                     questionary.Choice(
                         title=display_text,
                         value=col_name,
-                        checked=True  # Por defecto seleccionadas todas
+                        checked=checked
                     )
                 )
+            
+            if auto_increment_columns:
+                print(f"💡 Columnas auto-incrementales detectadas y excluidas: {', '.join(auto_increment_columns)}")
+                print("   Estas columnas se generan automáticamente por la base de datos")
             
             # Permitir al usuario seleccionar columnas
             selected = questionary.checkbox(
@@ -262,8 +294,14 @@ class CLIInterface:
                 print("❌ Debes seleccionar al menos una columna")
                 return self.select_columns(table_name)
             
-            print(f"✅ Columnas seleccionadas: {len(selected)}")
-            return selected
+            # Filtrar columnas auto-incrementales (por si el usuario las incluyó manualmente)
+            final_selected = [col for col in selected if col not in auto_increment_columns]
+            
+            if len(final_selected) != len(selected):
+                print(f"💡 Se excluyeron {len(selected) - len(final_selected)} columnas auto-incrementales")
+            
+            print(f"✅ Columnas seleccionadas: {len(final_selected)}")
+            return final_selected
             
         except Exception as e:
             print(f"❌ Error obteniendo columnas: {e}")
@@ -289,7 +327,7 @@ class CLIInterface:
             
             print(f"\n📝 Configurando: {col_name} ({data_type})")
             
-            # Opciones de generación basadas en el tipo de dato
+            # Opciones de generación basadas en el tipo de dato REAL de PostgreSQL
             if 'int' in data_type:
                 choices = [
                     questionary.Choice("Números aleatorios", value="random"),
@@ -304,9 +342,14 @@ class CLIInterface:
                 ]
             elif 'bool' in data_type:
                 choices = [
-                    questionary.Choice("Valores aleatorios", value="random"),
+                    questionary.Choice("Valores booleanos aleatorios", value="random"),
                     questionary.Choice("Solo True", value="true"),
                     questionary.Choice("Solo False", value="false")
+                ]
+            elif 'date' in data_type or 'time' in data_type:
+                choices = [
+                    questionary.Choice("Fechas aleatorias", value="random"),
+                    questionary.Choice("Fecha fija", value="fixed")
                 ]
             else:
                 choices = [
@@ -336,6 +379,11 @@ class CLIInterface:
                     config['fixed_value'] = int(fixed_value)
                 elif 'bool' in data_type:
                     fixed_value = questionary.confirm("¿Valor True?").ask()
+                    config['fixed_value'] = fixed_value
+                elif 'date' in data_type or 'time' in data_type:
+                    fixed_value = questionary.text(
+                        "Valor fijo (formato YYYY-MM-DD para fecha, HH:MM:SS para tiempo):"
+                    ).ask()
                     config['fixed_value'] = fixed_value
                 else:
                     fixed_value = questionary.text("Valor fijo:").ask()
@@ -386,7 +434,7 @@ class CLIInterface:
             
             if questionary.confirm(f"¿Quieres cambiar y poblar '{priority_order[0]}' primero?").ask():
                 # Cambiar a la tabla prioritaria
-                return self._switch_to_priority_table(priority_order[0], table_name)
+                return self.switch_to_priority_table(priority_order[0], table_name)
             else:
                 print("❌ No se puede continuar sin poblar las tablas relacionadas vacías")
                 return False
@@ -423,11 +471,67 @@ class CLIInterface:
         print(f"   ├─ Registros a insertar: {record_count}")
         print(f"   ╰─ Total después: {current_count + record_count}")
         
-        return questionary.confirm(
+        # Preguntar si quiere continuar
+        should_continue = questionary.confirm(
             f"¿Continuar con la inserción de {record_count} registros?"
         ).ask()
+        
+        if not should_continue:
+            # Si el usuario dice que NO, preguntar qué quiere hacer
+            print(f"\n🔄 Operación cancelada para la tabla '{table_name}'")
+            
+            choices = [
+                questionary.Choice(title="🔄 Reconfigurar esta tabla", value="reconfigure"),
+                questionary.Choice(title="📊 Seleccionar otra tabla", value="new_table"),
+                questionary.Choice(title="🏠 Volver al menú principal", value="main_menu"),
+                questionary.Choice(title="🚪 Salir del programa", value="exit")
+            ]
+            
+            action = questionary.select(
+                "¿Qué quieres hacer ahora?",
+                choices=choices
+            ).ask()
+            
+            if action == "reconfigure":
+                # Volver a configurar la misma tabla
+                return self._reconfigure_table(table_name)
+            elif action == "new_table":
+                # Seleccionar una nueva tabla
+                new_table = self.select_table()
+                if new_table:
+                    return self.analyze_and_confirm(new_table, record_count, [])
+                return False
+            elif action == "main_menu":
+                # Devolver False para indicar que no continuar y volver al menú principal
+                return False
+            else:  # exit
+                print("👋 ¡Hasta pronto!")
+                exit()
+        
+        return should_continue
+
+    def _reconfigure_table(self, table_name: str) -> bool:
+        """Permite reconfigurar la misma tabla con nuevos parámetros"""
+        print(f"\n🔄 RECONFIGURANDO TABLA: {table_name}")
+        
+        # Permitir cambiar las columnas seleccionadas
+        selected_columns = self.select_columns(table_name)
+        if not selected_columns:
+            return False
+        
+        # Permitir cambiar la configuración de columnas
+        if questionary.confirm("¿Quieres configurar cómo generar datos para cada columna?").ask():
+            column_configs = self.configure_column_data(table_name, selected_columns)
+        else:
+            column_configs = {}
+        
+        # Permitir cambiar el número de registros
+        record_count = self.get_insert_count()
+        
+        # Volver a analizar y confirmar
+        return self.analyze_and_confirm(table_name, record_count, selected_columns)
     
-    def _switch_to_priority_table(self, priority_table: str, original_table: str) -> bool:
+    def switch_to_priority_table(self, priority_table: str, original_table: str) -> bool:
         """Cambia a poblar la tabla prioritaria primero"""
         print(f"\n🔄 CAMBIANDO A TABLA PRIORITARIA: {priority_table}")
         
