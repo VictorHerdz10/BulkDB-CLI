@@ -2,3 +2,4 @@ psycopg2-binary>=2.9.9
 questionary>=1.10.0
 rich>=13.7.0
 typing-extensions>=4.8.0
+pyinstaller>=6.16.0
