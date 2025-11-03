@@ -114,7 +114,7 @@ class CLIInterface:
             else:
                 connection_string = questionary.text(
                     "String de conexión a guardar:",
-                    default="postgresql://usuario:password@localhost:5432/mi_base_datos"
+                    default="postgresql://postgres:12345678@localhost:5432/postgres"
                 ).ask()
             
             if connection_string:
@@ -131,7 +131,7 @@ class CLIInterface:
         while True:
             connection_string = questionary.text(
                 "Ingresa el string de conexión:",
-                default="postgresql://usuario:password@localhost:5432/mi_base_datos",
+                default="postgresql://postgres:12345678@localhost:5432/postgres",
                 instruction="(formato: postgresql://usuario:contraseña@host:puerto/base_datos)"
             ).ask()
             
