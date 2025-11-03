@@ -1,0 +1,967 @@
+{
+  "metadata": {
+    "version": "2.0",
+    "total_records": 0,
+    "last_updated": "2024-01-01",
+    "languages": ["es", "en", "global"]
+  },
+  "base_values": {
+    
+    "personal_names": {
+      "spanish_male_first": ["Alejandro","Carlos","Javier","Miguel","Ángel","Daniel","David","Diego","Antonio","José",
+    "Francisco","Manuel","Pablo","Sergio","Fernando","Luis","Rafael","Alberto","Óscar","Jaime",
+    "Andrés","Adrián","Víctor","Juan","Raúl","Iván","Rubén","Enrique","Ramón","Martín",
+    "Sebastián","Samuel","Mateo","Benjamín","Hugo","Lucas","Alonso","León","Marco","Iker",
+    "Aitor","Unai","Jon","Ander","Gorka","Eneko","Xabier","Aritz","Oier","Gaizka",
+    "Rodrigo","Gonzalo","Álvaro","Guillermo","Pedro","Salvador","Felipe","Ricardo","Roberto","Eduardo",
+    "Mario","Emilio","César","Julio","Ignacio","Tomás","Vicente","Agustín","Gabriel","Joan",
+    "Jordi","Marc","Pol","Nil","Leo","Jan","Biel","Dídac","Roc","Oriol",
+    "Max","Jan","Bruno","Eric","Arnau","Gerard","Francesc","Alex","Sergi","Carles",
+    "Pere","Miquel","Ramon","Lluís","Joel","Isaac","Biel","Martí","Nil","Leo",
+    "Jan","Bruno","Eric","Arnau","Gerard","Francesc","Alex","Sergi","Carles","Pere",
+    "Miquel","Ramon","Lluís","Joel","Isaac","Biel","Martí","Nil","Leo","Jan",
+    "Bruno","Eric","Arnau","Gerard","Francesc","Alex","Sergi","Carles","Pere","Miquel",
+    "Ramon","Lluís","Joel","Isaac","Biel","Martí","Nil","Leo","Jan","Bruno",
+    "Eric","Arnau","Gerard","Francesc","Alex","Sergi","Carles","Pere","Miquel","Ramon",
+    "Lluís","Joel","Isaac","Biel","Martí","Nil","Leo","Jan","Bruno","Eric",
+    "Arnau","Gerard","Francesc","Alex","Sergi","Carles","Pere","Miquel","Ramon","Lluís",
+    "Joel","Isaac","Biel","Martí","Nil","Leo","Jan","Bruno","Eric","Arnau",
+    "Gerard","Francesc","Alex","Sergi","Carles","Pere","Miquel","Ramon","Lluís","Joel",
+    "Isaac","Biel","Martí","Nil","Leo","Jan","Bruno","Eric","Arnau","Gerard",
+    "Francesc", "Alejandro", "Carlos", "Javier", "Miguel", "Ángel", "Daniel", "David", "Diego", "Antonio", "José",
+        "Francisco", "Manuel", "Pablo", "Sergio", "Fernando", "Luis", "Rafael", "Alberto", "Óscar", "Jaime",
+        "Andrés", "Adrián", "Víctor", "Juan", "Raúl", "Iván", "Rubén", "Enrique", "Ramón", "Martín",
+        "Sebastián", "Samuel", "Mateo", "Benjamín", "Hugo", "Lucas", "Alonso", "León", "Marco", "Iker",
+        "Aitor", "Unai", "Jon", "Ander", "Gorka", "Eneko", "Xabier", "Aritz", "Oier", "Gaizka",
+        "Rodrigo", "Gonzalo", "Álvaro", "Guillermo", "Pedro", "Salvador", "Felipe", "Ricardo", "Roberto", "Eduardo",
+        "Mario", "Emilio", "César", "Julio", "Ignacio", "Tomás", "Vicente", "Agustín", "Gabriel", "Joan",
+        "Jordi", "Marc", "Pol", "Nil", "Leo", "Jan", "Biel", "Dídac", "Roc", "Oriol",
+        "Max", "Bruno", "Eric", "Arnau", "Gerard", "Francesc", "Alex", "Sergi", "Carles", "Pere",
+        "Miquel", "Ramon", "Lluís", "Joel", "Isaac", "Martí", "Nil", "Jan", "Bruno", "Eric",
+        "James", "Robert", "John", "Michael", "William", "David", "Richard", "Joseph", "Thomas", "Charles",
+        "Christopher", "Daniel", "Matthew", "Anthony", "Donald", "Mark", "Paul", "Steven", "Andrew", "Kenneth",
+        "Joshua", "Kevin", "Brian", "George", "Edward", "Ronald", "Timothy", "Jason", "Jeffrey", "Ryan",
+        "Jacob", "Gary", "Nicholas", "Eric", "Stephen", "Jonathan", "Larry", "Justin", "Scott", "Brandon",
+        "Benjamin", "Samuel", "Gregory", "Frank", "Alexander", "Raymond", "Patrick", "Jack", "Dennis", "Jerry",
+        "Tyler", "Aaron", "Jose", "Adam", "Henry", "Nathan", "Douglas", "Zachary", "Peter", "Kyle",
+        "Walter", "Ethan", "Jeremy", "Harold", "Keith", "Christian", "Roger", "Noah", "Gerald", "Carl",
+        "Terry", "Sean", "Austin", "Arthur", "Lawrence", "Jesse", "Dylan", "Bryan", "Joe", "Jordan",
+        "Billy", "Bruce", "Albert", "Willie", "Gabriel", "Logan", "Alan", "Juan", "Wayne", "Roy",
+        "Ralph", "Randy", "Eugene", "Vincent", "Russell", "Elijah", "Louis", "Bobby", "Philip", "Johnny"],
+          "spanish_female_first": [
+        "María", "Carmen", "Ana", "Laura", "Isabel", "Elena", "Sofia", "Paula", "Lucía", "Marta",
+        "Cristina", "Teresa", "Rosa", "Patricia", "Andrea", "Silvia", "Nuria", "Beatriz", "Raquel", "Eva",
+        "Pilar", "Angeles", "Concepción", "Dolores", "Antonia", "Rosario", "Mercedes", "Josefa", "Francisca", "Juana",
+        "Alicia", "Sara", "Natalia", "Clara", "Inés", "Alba", "Noelia", "Celia", "Lorena", "Miriam",
+        "Esther", "Lidia", "Carla", "Nerea", "Irene", "Rocío", "Victoria", "Susana", "Aurora", "Montserrat",
+        "Gemma", "Nuria", "Olga", "Yolanda", "Eugenia", "Amparo", "Asunción", "Encarnación", "Consuelo", "Soledad",
+        "Verónica", "Nicolasa", "Manuela", "Lourdes", "Martina", "Daniela", "Valeria", "Jimena", "Luciana", "Ximena",
+        "Camila", "Valentina", "Samantha", "Emily", "Ashley", "Sarah", "Amanda", "Jessica", "Jennifer", "Elizabeth",
+        "Linda", "Barbara", "Susan", "Margaret", "Dorothy", "Lisa", "Nancy", "Karen", "Betty", "Helen",
+        "Sandra", "Donna", "Carol", "Ruth", "Sharon", "Michelle", "Laura", "Sarah", "Kimberly", "Deborah",
+        "Jessica", "Shirley", "Cynthia", "Angela", "Melissa", "Brenda", "Amy", "Anna", "Rebecca", "Virginia",
+        "Kathleen", "Pamela", "Martha", "Debra", "Amanda", "Stephanie", "Carolyn", "Christine", "Marie", "Janet",
+        "Catherine", "Frances", "Ann", "Joyce", "Diane", "Alice", "Julie", "Heather", "Teresa", "Doris",
+        "Gloria", "Evelyn", "Jean", "Cheryl", "Mildred", "Katherine", "Joan", "Janice", "Judy", "Christina",
+        "Kathy", "Theresa", "Beverly", "Denise", "Tammy", "Irene", "Jane", "Lori", "Rachel", "Marilyn",
+        "Andrea", "Kathryn", "Louise", "Sara", "Anne", "Jacqueline", "Wanda", "Bonnie", "Julia", "Ruby",
+        "Lois", "Tina", "Phyllis", "Norma", "Paula", "Diana", "Annie", "Lillian", "Emily", "Robin",
+        "Maria", "Fatima", "Aisha", "Yasmin", "Leila", "Zara", "Nour", "Lina", "Rania", "Samira",
+        "Sofia", "Olivia", "Emma", "Charlotte", "Amelia", "Ava", "Mia", "Isabella", "Sophia", "Lily",
+        "Grace", "Chloe", "Ella", "Zoe", "Harper", "Evelyn", "Aurora", "Eleanor", "Hannah", "Nora"], 
+          "spanish_last_names": [
+        "García", "Rodríguez", "González", "Fernández", "López", "Martínez", "Sánchez", "Pérez", "Gómez", "Martín",
+        "Jiménez", "Ruiz", "Hernández", "Díaz", "Moreno", "Álvarez", "Romero", "Navarro", "Torres", "Domínguez",
+        "Ramos", "Vázquez", "Ramírez", "Gil", "Serrano", "Morales", "Molina", "Suárez", "Ortega", "Delgado",
+        "Castro", "Ortiz", "Rubio", "Marín", "Sanz", "Núñez", "Iglesias", "Medina", "Garrido", "Cortés",
+        "Castillo", "Santos", "Lozano", "Guerrero", "Cano", "Prieto", "Méndez", "Cruz", "Calvo", "Gallego",
+        "Vidal", "León", "Márquez", "Herrera", "Peña", "Flores", "Cabrera", "Campos", "Vega", "Fuentes",
+        "Carrasco", "Diez", "Caballero", "Reyes", "Nieto", "Aguilar", "Pascual", "Santana", "Herrero", "Montero",
+        "Lorenzo", "Hidalgo", "Giménez", "Ibáñez", "Ferrer", "Durán", "Santiago", "Benítez", "Mora", "Vicente",
+        "Arias", "Carmona", "Crespo", "Román", "Pastor", "Soto", "Sáez", "Velasco", "Moya", "Soler",
+        "Parra", "Esteban", "Bravo", "Gallardo", "Rojas", "Paredes", "Redondo", "Rivera", "Merino", "Rivas",
+        "Smith", "Johnson", "Williams", "Brown", "Jones", "Garcia", "Miller", "Davis", "Rodriguez", "Martinez",
+        "Hernandez", "Lopez", "Gonzalez", "Wilson", "Anderson", "Thomas", "Taylor", "Moore", "Jackson", "Martin",
+        "Lee", "Perez", "Thompson", "White", "Harris", "Sanchez", "Clark", "Ramirez", "Lewis", "Robinson",
+        "Walker", "Young", "Allen", "King", "Wright", "Scott", "Torres", "Nguyen", "Hill", "Flores",
+        "Green", "Adams", "Nelson", "Baker", "Hall", "Rivera", "Campbell", "Mitchell", "Carter", "Roberts"]
+        },
+        "contact_info": {
+      "email_domains": [
+        "gmail.com", "yahoo.com", "hotmail.com", "outlook.com", "aol.com", "icloud.com", "protonmail.com",
+        "company.com", "enterprise.com", "business.com", "corporate.com", "tech.com", "digital.com", "global.com",
+        "nauta.cu", "infomed.sld.cu", "citmatel.cu", "cubarte.cu", "uneac.cu", "minrex.gob.cu"
+      ],
+      "phone_prefixes": {
+        "spain": ["+34-91", "+34-93", "+34-95", "+34-96", "+34-94", "+34-92", "+34-98", "+34-97"],
+        "usa": ["+1-212", "+1-310", "+1-415", "+1-305", "+1-702", "+1-312", "+1-617", "+1-404"],
+        "mexico": ["+52-55", "+52-81", "+52-33", "+52-656", "+52-664", "+52-222", "+52-443"],
+        "cuba": ["+53-7", "+53-5", "+53-32", "+53-33", "+53-42", "+53-43", "+53-45", "+53-46"]
+      },
+      "social_media": [
+        "facebook.com/", "twitter.com/", "instagram.com/", "linkedin.com/in/", "youtube.com/", "tiktok.com/@",
+        "pinterest.com/", "snapchat.com/add/", "whatsapp.com/", "telegram.me/", "discord.gg/", "reddit.com/user/"
+      ]
+    },
+
+    "documents": {
+      "id_types": [
+        "DNI", "NIE", "Pasaporte", "Carnet de Identidad", "Licencia de Conducir", "Tarjeta de Residencia",
+        "Permiso de Trabajo", "Seguro Social", "Número de Identificación Fiscal", "Cédula de Ciudadanía",
+        "Documento Nacional de Identidad", "Carné de Extranjería", "Pasaporte Diplomático", "Visado de Estudiante"
+      ],
+      "document_formats": {
+        "dni": ["{8digits}{letter}", "{letter}{7digits}"],
+        "passport": ["[A-Z]{2}[0-9]{6}", "[A-Z]{1}[0-9]{7}", "[0-9]{9}"],
+        "ssn": ["[0-9]{3}-[0-9]{2}-[0-9]{4}", "[0-9]{9}"],
+        "tax_id": ["[A-Z]{1}[0-9]{7}[A-Z]{1}", "[0-9]{8}[A-Z]{1}", "[A-Z]{2}[0-9]{6}"]
+      }
+    },
+    "business_entities": {
+      "company_suffixes": [
+        "S.A.", "S.L.", "S.R.L.", "C.A.", "Inc.", "Corp.", "Ltd.", "GmbH", "AG", "BV",
+        "SAS", "SC", "Co.", "Enterprise", "Group", "Holdings", "Partners", "Ventures"
+      ],
+      "industries": [
+        "Tecnología", "Banca", "Seguros", "Retail", "Salud", "Educación", "Energía", "Logística",
+        "Turismo", "Medios", "Entretenimiento", "Bienes Raíces", "Manufactura", "Automotriz",
+        "Aeroespacial", "Farmacéutica", "Biotecnología", "Telecomunicaciones", "Consultoría",
+        "Legal", "Construcción", "Agricultura", "Minería", "Petróleo", "Gas", "Textil",
+        "Alimentación", "Bebidas", "Transporte", "Hoteleria", "Restauración", "Deportes"
+      ],
+      "company_sizes": [
+        "Startup (1-10)", "PYME (11-50)", "Mediana Empresa (51-200)", "Gran Empresa (201-1000)",
+        "Corporación (1001-5000)", "Multinacional (5001+)", "Empresa Familiar", "Franquicia",
+        "Cooperativa", "Asociación", "Fundación", "Organización Sin Ánimo de Lucro"
+      ],
+      "business_models": [
+        "B2B", "B2C", "B2B2C", "SaaS", "PaaS", "IaaS", "E-commerce", "Marketplace",
+        "Subscription", "Freemium", "On-demand", "Sharing Economy", "Crowdsourcing",
+        "Affiliate", "Licensing", "Franchising", "Direct Sales", "Retail", "Wholesale"
+      ]
+    },
+    "products_services": {
+      "electronics": [
+        "iPhone 14 Pro 128GB", "Samsung Galaxy S23 Ultra", "MacBook Air M2", "iPad Pro 12.9", "Apple Watch Series 8",
+        "PlayStation 5", "Xbox Series X", "Nintendo Switch OLED", "Smart TV 4K 55", "Auriculares Sony WH-1000XM5",
+        "Laptop Dell XPS 13", "Tablet Samsung Galaxy Tab S8", "Smartphone Google Pixel 7", "Smartwatch Garmin Fenix 7",
+        "Cámara Sony A7 IV", "Drone DJI Mavic 3", "Altavoz Sonos One", "Monitor LG UltraGear", "Teclado Mecánico Logitech",
+        "Ratón Gaming Razer", "Impresora HP LaserJet", "Router ASUS RT-AX86U", "Disco Duro SSD 1TB", "Memoria RAM 16GB DDR4"
+      ],
+      "food_beverages": [
+        "Arroz integral", "Frijoles negros", "Plátanos maduros", "Carne de cerdo", "Pollo fresco", "Pescado fresco",
+        "Viandas mixtas", "Ensalada verde", "Pan integral", "Queso gouda", "Yogur natural", "Leche entera",
+        "Café molido", "Té verde", "Agua mineral", "Jugo de naranja", "Refresco cola", "Cerveza artesanal",
+        "Vino tinto", "Whisky escocés", "Aceite de oliva", "Vinagre balsámico", "Sal marina", "Pimienta negra"
+      ],
+      "clothing": [
+        "Camisa Oxford azul", "Pantalón chino beige", "Vestido negro cocktail", "Zapatos Derby marrón", "Chaqueta denim",
+        "Falda midi plisada", "Sudadera con capucha", "Jeans slim fit", "Blusa de seda", "Traje sastre gris",
+        "Abrigo de lana", "Bufanda de cachemira", "Guantes de piel", "Gorra baseball", "Calcetines deportivos"
+      ],
+      "services": [
+        "Consultoría IT estratégica", "Desarrollo app móvil nativa", "Marketing digital SEM/SEO", "Diseño UX/UI profesional",
+        "Auditoría de seguridad informática", "Soporte técnico 24/7", "Hosting web empresarial", "Dominio .com personalizado",
+        "Certificado SSL", "Backup automático cloud", "Mantenimiento preventivo", "Formación especializada", "Traducción profesional"
+      ]
+    },
+    "professional": {
+      "job_titles": [
+        "Desarrollador Full Stack Senior", "Data Scientist especializado", "DevOps Engineer", "CTO con experiencia",
+        "Product Manager", "Project Manager Agile", "Scrum Master certificado", "Business Analyst", "UX Researcher",
+        "UI Designer", "Frontend Developer React", "Backend Developer Node.js", "Mobile Developer iOS/Android",
+        "Database Administrator", "Cloud Architect AWS", "Security Engineer", "QA Engineer", "Technical Lead",
+        "Software Architect", "System Administrator", "Network Engineer", "Data Engineer", "Machine Learning Engineer",
+        "AI Research Scientist", "Blockchain Developer", "Game Developer", "Embedded Systems Engineer",
+        "Director General", "Gerente de Operaciones", "Jefe de Proyectos", "Coordinador de Equipo",
+        "Sales Executive", "Account Manager", "Business Development", "Marketing Manager", "Content Creator",
+        "Social Media Manager", "SEO Specialist", "Digital Marketing Analyst", "Brand Manager", "Public Relations"
+      ],
+      "departments": [
+        "Tecnología", "Ventas", "Marketing", "Recursos Humanos", "Finanzas", "Operaciones", "Legal", "Customer Success",
+        "Producto", "Ingeniería", "Diseño", "Investigación", "Desarrollo", "Calidad", "Infraestructura", "Seguridad",
+        "Data Science", "Inteligencia Artificial", "Blockchain", "Cloud Computing", "Mobile", "Web", "DevOps", "SRE"
+      ],
+      "industries": [
+        "Tecnología", "Banca", "Seguros", "Retail", "Salud", "Educación", "Energía", "Logística", "Turismo", "Medios",
+        "Entretenimiento", "Bienes Raíces", "Manufactura", "Automotriz", "Aeroespacial", "Farmacéutica", "Biotecnología",
+        "Telecomunicaciones", "Consultoría", "Legal", "Construcción", "Agricultura", "Mineria", "Petróleo", "Gas"
+      ]
+    },
+       "financial_data": {
+      "currencies": [
+        {"code": "EUR", "name": "Euro", "symbol": "€"},
+        {"code": "USD", "name": "Dólar Estadounidense", "symbol": "$"},
+        {"code": "GBP", "name": "Libra Esterlina", "symbol": "£"},
+        {"code": "JPY", "name": "Yen Japonés", "symbol": "¥"},
+        {"code": "CAD", "name": "Dólar Canadiense", "symbol": "C$"},
+        {"code": "AUD", "name": "Dólar Australiano", "symbol": "A$"},
+        {"code": "CHF", "name": "Franco Suizo", "symbol": "CHF"},
+        {"code": "CNY", "name": "Yuan Chino", "symbol": "¥"},
+        {"code": "CUP", "name": "Peso Cubano", "symbol": "$"},
+        {"code": "MXN", "name": "Peso Mexicano", "symbol": "$"}
+      ],
+      "banks": {
+        "spanish_banks": [
+          "Santander", "BBVA", "CaixaBank", "Bankinter", "Sabadell", "Unicaja", "Kutxabank", "Ibercaja", "Abanca", "EVO Banco",
+          "ING", "Openbank", "Caja Rural", "Cajamar", "Banco Mediolanum", "Banco Pichincha", "Banco Caminos", "Banco Castilla-La Mancha"
+        ],
+        "international_banks": [
+          "JPMorgan Chase", "Bank of America", "Wells Fargo", "Citigroup", "Goldman Sachs", "Morgan Stanley",
+          "HSBC", "Barclays", "BNP Paribas", "Société Générale", "Deutsche Bank", "UBS", "Credit Suisse",
+          "Royal Bank of Canada", "Toronto-Dominion Bank", "Commonwealth Bank", "Westpac", "ANZ", "National Australia Bank"
+        ]
+      },
+      "transaction_types": [
+        "Compra", "Venta", "Transferencia", "Depósito", "Retiro", "Pago de Servicios", "Préstamo", "Inversión",
+        "Reembolso", "Comisión", "Interés", "Dividendo", "Alquiler", "Nómina", "Subvención", "Donación"
+      ],
+      "payment_methods": [
+        "Efectivo", "Tarjeta de Crédito", "Tarjeta de Débito", "Transferencia Bancaria", "PayPal", "Bizum",
+        "Apple Pay", "Google Pay", "Cheque", "Criptomonedas", "Pago Móvil", "Contra Reembolso", "Domiciliación"
+      ]
+    },
+       "system_data": {
+      "status_types": [
+        "active", "inactive", "pending", "completed", "cancelled", "processing", "shipped", "delivered",
+        "approved", "rejected", "expired", "suspended", "archived", "draft", "published", "deleted",
+        "enabled", "disabled", "locked", "unlocked", "verified", "unverified", "paid", "unpaid"
+      ],
+      "boolean_values": [
+        {"value": true, "labels": ["true", "yes", "sí", "1", "active", "enabled", "on"]},
+        {"value": false, "labels": ["false", "no", "0", "inactive", "disabled", "off"]}
+      ],
+      "codes": {
+        "product_codes": ["SKU-{6digits}", "PROD-{4digits}-{2letters}", "ITEM-{8alphanum}", "CODE-{5digits}"],
+        "order_codes": ["ORD-{8digits}", "PO-{6digits}-{2letters}", "INV-{10alphanum}", "REF-{7digits}"],
+        "customer_codes": ["CUST-{6digits}", "CLI-{5digits}-{2letters}", "USR-{8alphanum}", "ACC-{7digits}"]
+      },
+      "data_types": [
+        "integer", "bigint", "smallint", "decimal", "numeric", "real", "double precision",
+        "character varying", "varchar", "text", "boolean", "date", "timestamp", "time",
+        "json", "jsonb", "uuid", "bytea", "array", "enum"
+      ],
+      "file_types": [
+        "image/jpeg", "image/png", "image/gif", "application/pdf", "text/plain", "text/csv",
+        "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        "application/vnd.ms-excel", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "application/zip", "application/x-rar-compressed", "video/mp4", "audio/mpeg"
+      ]
+    },
+       "descriptive_content": {
+      "product_descriptions": [
+        "Producto de alta calidad con garantía de 2 años y soporte técnico especializado",
+        "Solución innovadora diseñada para optimizar procesos y aumentar la productividad",
+        "Artículo premium fabricado con materiales de primera calidad y acabados excepcionales",
+        "Dispositivo inteligente con conectividad avanzada y funciones automatizadas",
+        "Servicio profesional personalizado según las necesidades específicas de cada cliente",
+        "Equipo robusto y duradero ideal para uso intensivo en entornos exigentes",
+        "Software intuitivo con interfaz moderna y capacidades de integración completas",
+        "Componente esencial para sistemas complejos con especificaciones técnicas avanzadas",
+        "Herramienta versátil que combina funcionalidad, diseño y rendimiento excepcional",
+        "Sistema integral que ofrece soluciones completas para desafíos empresariales críticos"
+      ],
+      "service_descriptions": [
+        "Servicio integral que incluye análisis, implementación y soporte continuo",
+        "Consultoría especializada con enfoque en resultados medibles y mejoras tangibles",
+        "Soporte técnico 24/7 con tiempos de respuesta rápidos y soluciones efectivas",
+        "Desarrollo a medida adaptado a los requisitos específicos de cada proyecto",
+        "Formación profesional con metodologías prácticas y materiales actualizados",
+        "Auditoría exhaustiva que identifica oportunidades de optimización y mejora",
+        "Mantenimiento preventivo que garantiza el funcionamiento óptimo de los sistemas",
+        "Integración de sistemas con compatibilidad multiplataforma y escalabilidad",
+        "Optimización de procesos mediante análisis de datos y mejores prácticas",
+        "Estrategia digital personalizada para maximizar el impacto y retorno de inversión"
+      ],
+      "company_descriptions": [
+        "Empresa líder en soluciones tecnológicas con más de 15 años de experiencia en el sector",
+        "Startup innovadora que desarrolla productos disruptivos para mercados emergentes",
+        "Consultora estratégica especializada en transformación digital y optimización de procesos",
+        "Fabricante de calidad con certificaciones internacionales y estándares rigurosos",
+        "Proveedor de servicios confiable con cartera diversificada y clientes satisfechos",
+        "Organización en crecimiento con enfoque en innovación y desarrollo sostenible",
+        "Compañía global con presencia internacional y equipo multicultural especializado",
+        "Empresa familiar con tradición de excelencia y valores corporativos sólidos",
+        "Corporación tecnológica que impulsa la digitalización en múltiples industrias",
+        "Grupo empresarial diversificado con soluciones integrales para clientes exigentes"
+      ],
+      "article_titles": [
+        "Guía completa de mejores prácticas en desarrollo de software ágil",
+        "Análisis del mercado tecnológico: tendencias y oportunidades 2024",
+        "Estrategias efectivas para la transformación digital empresarial",
+        "Manual de implementación de sistemas de seguridad informática",
+        "Estudio comparativo de frameworks de desarrollo web modernos",
+        "Metodologías para la gestión exitosa de proyectos complejos",
+        "Innovaciones disruptivas en inteligencia artificial y machine learning",
+        "Optimización de procesos mediante automatización y analítica avanzada",
+        "Seguridad en la nube: mejores prácticas y consideraciones críticas",
+        "El futuro del trabajo remoto: herramientas y estrategias efectivas"
+      ]
+    },
+       "temporal_data": {
+      "date_formats": [
+        "YYYY-MM-DD", "DD/MM/YYYY", "MM/DD/YYYY", "DD-MM-YYYY", "MM-DD-YYYY",
+        "YYYY/MM/DD", "DD MMM YYYY", "MMM DD, YYYY", "DD de MMMM de YYYY", "MMMM DD, YYYY"
+      ],
+      "time_periods": [
+        "mañana", "tarde", "noche", "madrugada", "mediodía", "medianoche",
+        "primer trimestre", "segundo trimestre", "tercer trimestre", "cuarto trimestre",
+        "primer semestre", "segundo semestre", "año fiscal", "año calendario"
+      ],
+      "business_hours": [
+        "09:00-18:00", "08:00-17:00", "10:00-19:00", "08:30-17:30", "09:30-18:30",
+        "24/7", "Lunes a Viernes", "Lunes a Sábado", "Horario continuo", "Turno de mañana", "Turno de tarde"
+      ],
+      "holidays": [
+        {"date": "01-01", "name": "Año Nuevo"},
+        {"date": "06-01", "name": "Día de Reyes"},
+        {"date": "01-05", "name": "Día del Trabajo"},
+        {"date": "15-08", "name": "Asunción de la Virgen"},
+        {"date": "12-10", "name": "Día de la Hispanidad"},
+        {"date": "01-11", "name": "Todos los Santos"},
+        {"date": "06-12", "name": "Día de la Constitución"},
+        {"date": "08-12", "name": "Inmaculada Concepción"},
+        {"date": "25-12", "name": "Navidad"}
+      ]
+    },
+    "geographic": {
+      "cuban_provinces": [
+        "Pinar del Río", "Artemisa", "La Habana", "Mayabeque", "Matanzas", "Cienfuegos", "Villa Clara", "Sancti Spíritus", 
+        "Ciego de Ávila", "Camagüey", "Las Tunas", "Holguín", "Granma", "Santiago de Cuba", "Guantánamo", "Isla de la Juventud"
+      ],
+      "cuban_municipalities": [
+        "Playa", "Plaza", "Centro Habana", "La Habana Vieja", "Regla", "Habana del Este", "Guanabacoa", "San Miguel", 
+        "Diez de Octubre", "Cerro", "Marianao", "La Lisa", "Boyeros", "Arroyo Naranjo", "Cotorro"
+      ],
+      "cuban_streets": [
+        "Calle 23", "Avenida de los Presidentes", "Malecón", "Calle G", "Calle Línea", "Avenida 41", "Calle 12", 
+        "Avenida 7ma", "Calle 84", "Avenida 31", "Calle 17", "Avenida 51", "Calle 72", "Avenida 5ta", "Calle 146"
+      ],
+      "international_cities": [
+        "Madrid", "Barcelona", "Valencia", "Sevilla", "Zaragoza", "Málaga", "Murcia", "Palma", "Las Palmas", "Bilbao",
+        "Alicante", "Córdoba", "Valladolid", "Vigo", "Gijón", "Hospitalet", "Vitoria", "Granada", "Elche", "Oviedo",
+        "París", "Londres", "Berlín", "Roma", "Ámsterdam", "Bruselas", "Viena", "Praga", "Budapest", "Varsovia",
+        "Lisboa", "Dublín", "Estocolmo", "Copenhague", "Oslo", "Helsinki", "Atenas", "Estambul", "Moscú", "Kiev",
+        "Nueva York", "Los Ángeles", "Chicago", "Houston", "Phoenix", "Filadelfia", "San Antonio", "San Diego", "Dallas", "San José",
+        "Miami", "Atlanta", "Boston", "Detroit", "Seattle", "Denver", "Washington", "Nashville", "Baltimore", "Louisville",
+        "Toronto", "Vancouver", "Montreal", "Calgary", "Ottawa", "Edmonton", "Winnipeg", "Quebec", "Hamilton", "Kitchener",
+        "Ciudad de México", "Guadalajara", "Monterrey", "Puebla", "Tijuana", "León", "Juárez", "Torreón", "Querétaro", "Merida",
+        "São Paulo", "Río de Janeiro", "Brasilia", "Salvador", "Fortaleza", "Belo Horizonte", "Manaus", "Curitiba", "Recife", "Porto Alegre",
+        "Buenos Aires", "Córdoba", "Rosario", "Mendoza", "Tucumán", "La Plata", "Mar del Plata", "Salta", "Santa Fe", "San Juan",
+        "Tokio", "Osaka", "Yokohama", "Nagoya", "Sapporo", "Kobe", "Kioto", "Fukuoka", "Kawasaki", "Saitama",
+        "Shanghái", "Pekín", "Cantón", "Shenzhen", "Tianjin", "Dongguan", "Chengdu", "Nankín", "Wuhan", "Hangzhou",
+        "Sídney", "Melbourne", "Brisbane", "Perth", "Adelaida", "Gold Coast", "Canberra", "Newcastle", "Wollongong", "Sunshine Coast"
+      ],
+      "countries": [
+        "España", "Francia", "Italia", "Alemania", "Reino Unido", "Portugal", "Países Bajos", "Bélgica", "Suiza", "Austria",
+        "Suecia", "Noruega", "Dinamarca", "Finlandia", "Polonia", "República Checa", "Hungría", "Rumanía", "Grecia", "Turquía",
+        "Rusia", "Ucrania", "Bielorrusia", "Estados Unidos", "Canadá", "México", "Brasil", "Argentina", "Chile", "Colombia",
+        "Perú", "Venezuela", "Ecuador", "Bolivia", "Paraguay", "Uruguay", "Costa Rica", "Panamá", "República Dominicana", "Puerto Rico",
+        "Cuba", "Jamaica", "Haití", "Bahamas", "China", "Japón", "Corea del Sur", "India", "Indonesia", "Tailandia",
+        "Vietnam", "Malasia", "Filipinas", "Singapur", "Australia", "Nueva Zelanda", "Sudáfrica", "Egipto", "Nigeria", "Kenia",
+        "Marruecos", "Argelia", "Túnez", "Arabia Saudí", "Emiratos Árabes", "Qatar", "Kuwait", "Israel", "Líbano", "Jordania"
+      ]
+    },
+       "digital_data": {
+      "urls": {
+        "domains": [
+          "example.com", "test.org", "demo.net", "sample.dev", "company.com", "business.com",
+          "enterprise.io", "startup.tech", "digital.solutions", "web.services", "cloud.platform",
+          "app.dev", "api.service", "portal.system", "platform.io", "tools.tech"
+        ],
+        "website_names": [
+          "Portal Corporativo", "Tienda Online", "Blog Oficial", "Sistema de Gestión", "Plataforma Cliente",
+          "Panel de Administración", "Aplicación Web", "Servicio en Línea", "Marketplace Digital", "Comunidad Virtual"
+        ]
+      },
+      "tech_terms": {
+        "programming_terms": [
+          "API", "SDK", "Framework", "Library", "Middleware", "Microservices", "Container", "Orchestration",
+          "DevOps", "CI/CD", "Agile", "Scrum", "Kanban", "Repository", "Branch", "Merge", "Deployment",
+          "Infrastructure", "Cloud", "Virtualization", "Automation", "Monitoring", "Logging", "Debugging"
+        ],
+        "it_infrastructure": [
+          "Servidor Web", "Base de Datos", "Balanceador de Carga", "Firewall", "Proxy", "VPN", "DNS",
+          "CDN", "Storage", "Backup", "Disaster Recovery", "High Availability", "Load Balancer", "Cache",
+          "Message Queue", "Service Mesh", "API Gateway", "Identity Provider", "Certificate Authority"
+        ]
+      },
+      "operating_systems": [
+        "Windows 10", "Windows 11", "macOS Monterey", "macOS Ventura", "Ubuntu 22.04", "CentOS 8",
+        "Debian 11", "Red Hat Enterprise Linux", "Android 13", "iOS 16", "Chrome OS", "Fedora 37"
+      ],
+      "browsers": [
+        "Chrome 118", "Firefox 118", "Safari 16", "Edge 118", "Opera 103", "Brave 1.48",
+        "Chrome Mobile", "Safari Mobile", "Samsung Internet", "UC Browser"
+      ]
+    },
+    "companies": {
+      "tech_companies": [
+        "Google", "Microsoft", "Apple", "Amazon", "Meta", "Tesla", "Netflix", "Uber", "Airbnb", "Spotify",
+        "Slack", "Zoom", "Salesforce", "Oracle", "IBM", "Intel", "Cisco", "Adobe", "SAP", "VMware",
+        "Twitter", "LinkedIn", "Pinterest", "Snapchat", "TikTok", "Twitch", "Discord", "Reddit", "Shopify", "Square",
+        "Stripe", "PayPal", "Venmo", "Coinbase", "Robinhood", "Dropbox", "Box", "Evernote", "Notion", "Asana",
+        "Trello", "Basecamp", "GitHub", "GitLab", "Bitbucket", "Docker", "Kubernetes", "MongoDB", "Redis", "Elastic",
+        "Datadog", "Splunk", "New Relic", "Cloudflare", "Akamai", "Fastly", "DigitalOcean", "Linode", "Vultr", "Heroku",
+        "Netlify", "Vercel", "Vercel", "WordPress", "Wix", "Squarespace", "Shopify", "Magento", "WooCommerce", "BigCommerce"
+      ],
+      "spanish_companies": [
+        "Telefónica", "Santander", "BBVA", "Inditex", "Iberdrola", "Repsol", "Ferrovial", "ACS", "Aena", "Mapfre",
+        "CaixaBank", "Bankinter", "Sabadell", "Unicaja", "Kutxabank", "Endesa", "Naturgy", "Red Eléctrica", "Enagás", "Cellnex",
+        "Amadeus", "Grifols", "Meliá", "IAG", "Vueling", "Iberia", "Air Europa", "Renfe", "Alsa", "Avanza",
+        "DIA", "Mercadona", "El Corte Inglés", "Carrefour", "Lidl", "Aldi", "Eroski", "Consum", "Caprabo", "Bonpreu"
+      ],
+      "international_corporations": [
+        "Toyota", "Volkswagen", "Mercedes-Benz", "BMW", "Ford", "General Motors", "Honda", "Nissan", "Hyundai", "Kia",
+        "Samsung", "LG", "Sony", "Panasonic", "Toshiba", "Hitachi", "Mitsubishi", "Canon", "Nikon", "Fujitsu",
+        "Nestlé", "Unilever", "Procter & Gamble", "Coca-Cola", "PepsiCo", "McDonald's", "KFC", "Starbucks", "Subway", "Burger King",
+        "Walmart", "Target", "Costco", "Home Depot", "Lowe's", "Best Buy", "IKEA", "H&M", "Zara", "Nike"
+      ]
+    },
+     "animals_pets": {
+      "dog_breeds": [
+        "Labrador Retriever", "Pastor Alemán", "Bulldog Francés", "Golden Retriever", "Chihuahua", "Poodle", "Boxer",
+        "Beagle", "Rottweiler", "Yorkshire Terrier", "Dachshund", "Siberian Husky", "Doberman", "Great Dane", "Shih Tzu"
+      ],
+      "cat_breeds": [
+        "Siamés", "Persa", "Maine Coon", "Bengalí", "Esfinge", "Angora", "Británico de Pelo Corto", "Azul Ruso",
+        "Ragdoll", "Siberiano", "Birmano", "Abisinio", "Scottish Fold", "Devon Rex", "Cornish Rex"
+      ],
+      "animal_names": [
+        "Max", "Luna", "Bella", "Charlie", "Lucy", "Cooper", "Daisy", "Milo", "Lola", "Rocky",
+        "Zeus", "Coco", "Buddy", "Molly", "Bailey", "Sophie", "Chloe", "Jack", "Maggie", "Bear",
+        "Duke", "Stella", "Tucker", "Zoe", "Oliver", "Leo", "Lily", "Mia", "Nala", "Simba"
+      ]
+    },
+     "education": {
+       "universities": [
+      "University of Oxford",
+      "University of Cambridge",
+      "Harvard University",
+      "Stanford University",
+      "Massachusetts Institute of Technology (MIT)",
+      "California Institute of Technology (Caltech)",
+      "Princeton University",
+      "Yale University",
+      "University of Chicago",
+      "Imperial College London",
+      "University College London (UCL)",
+      "ETH Zurich",
+      "University of Tokyo",
+      "National University of Singapore (NUS)",
+      "Peking University",
+      "Tsinghua University",
+      "University of Melbourne",
+      "University of Toronto",
+      "University of British Columbia",
+      "University of Cape Town",
+      "University of São Paulo",
+      "University of Buenos Aires",
+      "Sorbonne University",
+      "University of Copenhagen",
+      "University of Amsterdam"
+    ],
+    "degrees": [
+      "Bachelor of Science",
+      "Bachelor of Arts",
+      "Bachelor of Engineering",
+      "Bachelor of Business Administration",
+      "Bachelor of Medicine",
+      "Bachelor of Laws",
+      "Master of Science",
+      "Master of Arts",
+      "Master of Business Administration (MBA)",
+      "Master of Engineering",
+      "Master of Public Health",
+      "Doctor of Philosophy (PhD)",
+      "Doctor of Medicine",
+      "Doctor of Law",
+      "Associate Degree",
+      "Diploma",
+      "Certificate",
+      "Foundation Year",
+      "Undergraduate Certificate",
+      "Graduate Diploma"
+    ],
+    "academic_levels": [
+      "High School Diploma",
+      "Secondary Education",
+      "Associate Degree",
+      "Bachelor's Degree",
+      "Undergraduate Degree",
+      "Master's Degree",
+      "Graduate Degree",
+      "Doctoral Degree",
+      "PhD",
+      "Postdoctoral Research",
+      "Vocational Training",
+      "Professional Certificate",
+      "Diploma",
+      "Foundation Program",
+      "A-Levels",
+      "International Baccalaureate",
+      "GED (General Educational Development)",
+      "Continuing Education",
+      "Executive Education",
+      "Professional Development"
+    ],
+    "fields_of_study": [
+      "Computer Science",
+      "Business Administration",
+      "Medicine",
+      "Law",
+      "Engineering",
+      "Psychology",
+      "Economics",
+      "Biology",
+      "Chemistry",
+      "Physics",
+      "Mathematics",
+      "Political Science",
+      "Sociology",
+      "History",
+      "Literature",
+      "Philosophy",
+      "Architecture",
+      "Art and Design",
+      "Music",
+      "Education",
+      "Nursing",
+      "Pharmacy",
+      "Dentistry",
+      "Veterinary Science",
+      "Environmental Science",
+      "Data Science",
+      "Artificial Intelligence",
+      "Cybersecurity",
+      "Finance",
+      "Marketing",
+      "International Relations",
+      "Journalism",
+      "Communications",
+      "Public Health",
+      "Social Work",
+      "Agriculture",
+      "Urban Planning",
+      "Hospitality Management",
+      "Sports Science"
+    ]
+    },
+        "health_wellness": {
+      "hospitals": [
+        "Hospital General Universitario Gregorio Marañón",
+        "Hospital Clinic de Barcelona",
+        "Hospital Ángeles",
+        "Massachusetts General Hospital",
+        "Cleveland Clinic"
+      ],
+      "medical_specialties": [
+        "Cardiología",
+        "Pediatría",
+        "Dermatología",
+        "Traumatología",
+        "Oftalmología"
+      ],
+      "medications": [
+        "Paracetamol 500mg",
+        "Ibuprofeno 600mg",
+        "Amoxicilina 500mg",
+        "Omeprazol 20mg",
+        "Atorvastatina 10mg"
+      ],
+      "health_conditions": [
+        "Hipertensión arterial",
+        "Diabetes mellitus",
+        "Asma bronquial",
+        "Artritis reumatoide",
+        "Depresión mayor"
+      ]
+    },
+        "events_entertainment": {
+      "event_types": [
+        "Conferencia",
+        "Concierto",
+        "Feria comercial",
+        "Taller formativo",
+        "Evento deportivo"
+      ],
+      "entertainment_categories": [
+        "Cine",
+        "Teatro",
+        "Música",
+        "Deportes",
+        "Arte y cultura"
+      ],
+      "movie_genres": [
+        "Acción",
+        "Comedia",
+        "Drama",
+        "Ciencia ficción",
+        "Documental"
+      ],
+      "music_genres": [
+        "Pop",
+        "Rock",
+        "Hip Hop",
+        "Electrónica",
+        "Jazz"
+      ]
+    },
+        "transportation_logistics": {
+      "vehicle_types": [
+        "Automóvil sedan",
+        "Motocicleta deportiva",
+        "Camión de carga",
+        "Autobús urbano",
+        "Bicicleta eléctrica"
+      ],
+      "transport_modes": [
+        "Terrestre",
+        "Aéreo",
+        "Marítimo",
+        "Ferroviario",
+        "Multimodal"
+      ],
+      "shipping_companies": [
+        "DHL Express",
+        "FedEx",
+        "UPS",
+        "Correos",
+        "SEUR"
+      ],
+      "logistics_services": [
+        "Transporte express",
+        "Almacenamiento",
+        "Distribución última milla",
+        "Gestión de inventario",
+        "Logística inversa"
+      ]
+    },
+        "construction_real_estate": {
+      "property_types": [
+        "Apartamento",
+        "Casa unifamiliar",
+        "Local comercial",
+        "Oficina",
+        "Nave industrial"
+      ],
+      "construction_materials": [
+        "Hormigón armado",
+        "Acero estructural",
+        "Ladrillo cerámico",
+        "Madera laminada",
+        "Vidrio templado"
+      ],
+      "real_estate_agencies": [
+        "Tecnocasa",
+        "Engel & Völkers",
+        "RE/MAX",
+        "Century 21",
+        "Coldwell Banker"
+      ],
+      "property_features": [
+        "Piscina comunitaria",
+        "Parking subterráneo",
+        "Terraza privada",
+        "Jardín privado",
+        "Trastero incluido"
+      ]
+    },
+        "energy_environment": {
+      "energy_sources": [
+        "Solar fotovoltaica",
+        "Eólica",
+        "Hidroeléctrica",
+        "Gas natural",
+        "Biomasa"
+      ],
+      "environmental_certifications": [
+        "LEED Platinum",
+        "BREEAM Excellent",
+        "ISO 14001",
+        "Energy Star",
+        "Green Seal"
+      ],
+      "waste_management": [
+        "Reciclaje selectivo",
+        "Compostaje orgánico",
+        "Tratamiento de residuos",
+        "Recuperación energética",
+        "Vertido controlado"
+      ],
+      "sustainability_metrics": [
+        "Huella de carbono",
+        "Consumo hídrico",
+        "Eficiencia energética",
+        "Generación renovable",
+        "Economía circular"
+      ]
+    },
+        "security_defense": {
+      "security_services": [
+        "Vigilancia privada",
+        "Ciberseguridad",
+        "Control de accesos",
+        "Protección ejecutiva",
+        "Análisis de riesgos"
+      ],
+      "security_levels": [
+        "Básico",
+        "Estándar",
+        "Avanzado",
+        "Crítico",
+        "Máximo"
+      ],
+      "encryption_types": [
+        "AES-256",
+        "RSA-2048",
+        "ECC-384",
+        "SHA-256",
+        "Blowfish"
+      ],
+      "compliance_standards": [
+        "ISO 27001",
+        "SOC 2",
+        "GDPR",
+        "HIPAA",
+        "PCI DSS"
+      ]
+    },
+        "research_development": {
+      "research_areas": [
+        "Inteligencia Artificial",
+        "Biotecnología",
+        "Energías renovables",
+        "Nanotecnología",
+        "Ciencias de materiales"
+      ],
+      "funding_sources": [
+        "Subvención pública",
+        "Capital riesgo",
+        "Crowdfunding",
+        "Financiación corporativa",
+        "Programas europeos"
+      ],
+      "laboratory_equipment": [
+        "Espectrómetro de masas",
+        "Microscopio electrónico",
+        "Cromatógrafo líquido",
+        "Secuenciador de ADN",
+        "Centrífuga de alta velocidad"
+      ],
+      "scientific_methods": [
+        "Ensayo controlado aleatorio",
+        "Estudio observacional",
+        "Metodología cualitativa",
+        "Análisis estadístico",
+        "Revisión sistemática"
+      ]
+    },
+        "agriculture_livestock": {
+      "crop_types": [
+        "Cereales",
+        "Hortalizas",
+        "Frutales",
+        "Olivar",
+        "Vid"
+      ],
+      "livestock_breeds": [
+        "Vacuno frisón",
+        "Porcino duroc",
+        "Ovino merino",
+        "Caprino murciano",
+        "Avícola broiler"
+      ],
+      "farming_methods": [
+        "Agricultura ecológica",
+        "Cultivo intensivo",
+        "Rotación de cultivos",
+        "Agricultura de precisión",
+        "Hidroponía"
+      ],
+      "agricultural_products": [
+        "Aceite de oliva virgen extra",
+        "Vino de denominación de origen",
+        "Queso artesanal",
+        "Miel de flores",
+        "Jamón ibérico"
+      ]
+    },
+        "tourism_hospitality": {
+      "accommodation_types": [
+        "Hotel 5 estrellas",
+        "Apartamento turístico",
+        "Hostal boutique",
+        "Casa rural",
+        "Resort todo incluido"
+      ],
+      "tourist_activities": [
+        "Visita cultural",
+        "Turismo de aventura",
+        "Turismo gastronómico",
+        "Ecoturismo",
+        "Turismo de negocios"
+      ],
+      "hospitality_services": [
+        "Servicio de habitaciones",
+        "Concierge",
+        "Spa y bienestar",
+        "Organización de eventos",
+        "Transporte privado"
+      ],
+      "travel_destinations": [
+        "Ciudad histórica",
+        "Destino de playa",
+        "Montaña y naturaleza",
+        "Metrópolis cultural",
+        "Destino rural"
+      ]
+    },
+        "arts_culture": {
+      "art_movements": [
+        "Renacimiento",
+        "Impresionismo",
+        "Cubismo",
+        "Surrealismo",
+        "Arte contemporáneo"
+      ],
+      "cultural_institutions": [
+        "Museo del Prado",
+        "Teatro Real",
+        "Biblioteca Nacional",
+        "Centro cultural",
+        "Galería de arte"
+      ],
+      "artistic_techniques": [
+        "Óleo sobre lienzo",
+        "Acuarela",
+        "Escultura en mármol",
+        "Fotografía digital",
+        "Instalación multimedia"
+      ],
+      "cultural_events": [
+        "Exposición temporal",
+        "Festival de cine",
+        "Feria del libro",
+        "Bienal de arte",
+        "Semana cultural"
+      ]
+    },
+        "sports_recreation": {
+      "sports_disciplines": [
+        "Fútbol",
+        "Baloncesto",
+        "Tenis",
+        "Natación",
+        "Atletismo"
+      ],
+      "fitness_activities": [
+        "Yoga",
+        "CrossFit",
+        "Pilates",
+        "Spinning",
+        "Entrenamiento funcional"
+      ],
+      "sports_equipment": [
+        "Balón de fútbol",
+        "Raqueta de tenis",
+        "Bicicleta de carretera",
+        "Pesas rusas",
+        "Colchoneta de yoga"
+      ],
+      "recreational_facilities": [
+        "Gimnasio completo",
+        "Piscina olímpica",
+        "Campo de golf",
+        "Pista de pádel",
+        "Rocódromo"
+      ]
+    },
+        "government_public_admin": {
+      "government_levels": [
+        "Local",
+        "Autonómico",
+        "Nacional",
+        "Europeo",
+        "Internacional"
+      ],
+      "public_services": [
+        "Registro civil",
+        "Atención sanitaria",
+        "Educación pública",
+        "Servicios sociales",
+        "Policía local"
+      ],
+      "administrative_procedures": [
+        "Solicitud de licencia",
+        "Empadronamiento",
+        "Declaración de la renta",
+        "Subvenciones públicas",
+        "Concurso público"
+      ],
+      "public_documents": [
+        "DNI electrónico",
+        "Certificado digital",
+        "Empadronamiento",
+        "Vida laboral",
+        "Historial clínico"
+      ]
+    },
+    "generation_patterns": {
+      "email": {
+        "formats": ["{first}.{last}@{domain}", "{first_initial}{last}@{domain}", "{first}{last}@{domain}", "{first}_{last}@{domain}"],
+        "domains": ["gmail.com", "yahoo.com", "hotmail.com", "outlook.com", "company.com", "enterprise.com", "tech.com", "business.com"]
+      },
+      "phone": {
+        "cuba_formats": ["+53-5{8digits}", "+53-7{8digits}"],
+        "international_formats": ["+1-{3digits}-{3digits}-{4digits}", "+34-{9digits}", "+44-{10digits}", "+49-{11digits}"],
+        "area_codes": ["7", "5", "32", "33", "22", "24", "31", "45", "47", "48"]
+      },
+      "address": {
+        "cuba_formats": ["Calle {street} #{number} entre {street1} y {street2}, {municipality}, {province}"],
+        "international_formats": ["{number} {street} Street, {city}, {country}", "Avenida {street} #{number}, {city}, {country}"]
+      }
+    },
+        "table_context_hints": {
+      "users": {
+        "name": "personal_names",
+        "email": "email", 
+        "phone": "phone",
+        "birth_date": "date_age_based",
+        "created_at": "timestamp_recent"
+      },
+      "products": {
+        "name": "products_services",
+        "description": "product_description", 
+        "price": "price_realistic",
+        "category": "product_category"
+      },
+      "pets": {
+        "name": "animal_names",
+        "breed": "animal_breeds",
+        "birth_date": "date_pet_age"
+      },
+      "companies": {
+        "name": "companies", 
+        "address": "address_business",
+        "phone": "phone_business"
+      },
+      "employees": {
+        "first_name": "personal_names",
+        "last_name": "personal_names",
+        "position": "job_titles",
+        "department": "departments"
+      },
+      "orders": {
+        "order_number": "code_sequential",
+        "order_date": "date_recent", 
+        "status": "order_status"
+      },
+      "customers": {
+        "company_name": "companies",
+        "contact_name": "personal_names",
+        "email": "email_business"
+      }
+    }
+  }
+}
