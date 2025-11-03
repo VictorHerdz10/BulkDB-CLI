@@ -1,0 +1,118 @@
+#!/usr/bin/env python3
+import sys
+import os
+import time
+import questionary
+
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+
+from cli.interface import CLIInterface
+from cli.progress import ProgressManager
+from core.populator import DatabasePopulator
+from core.validators import DataValidator
+from core.advanced_relationships import RelationshipManager
+from utils.config import ConfigManager
+
+def main():
+    print("🚀 POBLADOR AVANZADO DE BASES DE DATOS POSTGRESQL")
+    print("=" * 60)
+    
+    cli = None
+    progress = ProgressManager()
+    config = ConfigManager()
+    
+    try:
+        # Cargar configuración
+        app_config = config.get_config()
+        
+        # Interfaz de usuario mejorada
+        cli = CLIInterface(config)
+        
+        # 1. Gestión de conexiones
+        connection_string = cli.manage_connections()
+        
+        # 2. Selección de tabla
+        table_name = cli.select_table()
+        
+        # 3. Selección de columnas
+        selected_columns = cli.select_columns(table_name)
+        
+        # 4. Configuración de datos por columna (OPCIONAL)
+        if questionary.confirm("¿Quieres configurar cómo generar datos para cada columna?").ask():
+            column_configs = cli.configure_column_data(table_name, selected_columns)
+        else:
+            column_configs = {}
+        
+        # 5. Validación avanzada
+        validator = DataValidator(cli.db)
+        is_valid, warnings = validator.validate_table_structure(table_name)
+        
+        progress.show_validation_results(is_valid, warnings)
+        if not is_valid:
+            print("❌ No se puede continuar debido a errores de validación")
+            return
+        
+        # 6. Análisis de relaciones avanzado (solo para columnas seleccionadas)
+        rel_manager = RelationshipManager(cli.db, cli.analyzer)
+        all_relationships = rel_manager.analyze_advanced_relationships(table_name)
+        relevant_relationships = {col: rel for col, rel in all_relationships.items() if col in selected_columns}
+        
+        if relevant_relationships:
+            progress.show_relationship_progress([
+                {
+                    'column': rel['column'],
+                    'foreign_table': rel['foreign_table'],
+                    'relationship_type': rel['cardinality'],
+                    'has_data': rel['data_availability']['has_data'],
+                    'data_count': rel['data_availability']['total_records']
+                }
+                for rel in relevant_relationships.values()
+            ])
+        
+        # 7. Configuración de inserción
+        record_count = cli.get_insert_count()
+        batch_size = app_config['defaults']['batch_size']
+        
+        # 8. Análisis y confirmación con columnas seleccionadas
+        if not cli.analyze_and_confirm(table_name, record_count, selected_columns):
+            print("❌ Operación cancelada por el usuario")
+            return
+        
+        # 9. Confirmación final
+        if not cli.final_confirmation(table_name, record_count, relevant_relationships):
+            print("❌ Operación cancelada por el usuario")
+            return
+        
+        # 10. Poblar la base de datos
+        progress.show_initialization_panel(table_name, record_count)
+        start_time = time.time()
+        
+        # Configurar el populator con las columnas seleccionadas
+        populator = DatabasePopulator(cli.db, cli.analyzer, cli.generator, progress)
+        populator.set_column_configs(column_configs)
+        
+        success_count, error_count = populator.populate_table(
+            table_name, record_count, selected_columns, batch_size
+        )
+        
+        duration = time.time() - start_time
+        
+        # 11. Mostrar resultados finales
+        progress.show_completion_panel(success_count, error_count, duration)
+        
+        # 12. Ofrecer exportación CON PARÁMETROS COMPLETOS
+        cli.offer_export_options(table_name, record_count, selected_columns, column_configs)
+        
+    except KeyboardInterrupt:
+        print("\n\n⏹️  Operación cancelada por el usuario")
+    except Exception as e:
+        print(f"\n💥 Error inesperado: {e}")
+        import traceback
+        traceback.print_exc()
+    finally:
+        if cli and hasattr(cli, 'db'):
+            cli.db.close_connection()
+            print("\n🔌 Conexión a la base de datos cerrada")
+
+if __name__ == "__main__":
+    main()
