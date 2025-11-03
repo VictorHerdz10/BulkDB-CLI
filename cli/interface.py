@@ -6,8 +6,33 @@ from core.data_generator import DataGenerator
 from core.validators import DataValidator
 from utils.config import ConfigManager
 import os
+import sys
 import json
 from datetime import datetime
+
+# Soporte para colores en Windows
+if sys.platform == "win32":
+    os.system("color")  # Habilita colores ANSI en Windows
+
+# Códigos de color ANSI mejorados
+class Colors:
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKCYAN = '\033[96m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+    
+    # Colores adicionales para mejor UX
+    MAGENTA = '\033[35m'
+    CYAN = '\033[36m'
+    YELLOW = '\033[33m'
+    BLUE = '\033[34m'
+    RED = '\033[31m'
+    GREEN = '\033[32m'
 
 class CLIInterface:
     def __init__(self, config_manager: ConfigManager = None):
@@ -19,11 +44,56 @@ class CLIInterface:
         self.current_connection_string = None
         self.selected_columns = []
     
+    def print_header(self, text: str):
+        """Imprime un encabezado con colores"""
+        print(f"\n{Colors.CYAN}{Colors.BOLD}{'='*60}{Colors.ENDC}")
+        print(f"{Colors.CYAN}{Colors.BOLD}🎯 {text}{Colors.ENDC}")
+        print(f"{Colors.CYAN}{Colors.BOLD}{'='*60}{Colors.ENDC}")
+    
+    def print_success(self, text: str):
+        """Imprime mensaje de éxito"""
+        print(f"{Colors.GREEN}✅ {text}{Colors.ENDC}")
+    
+    def print_error(self, text: str):
+        """Imprime mensaje de error"""
+        print(f"{Colors.RED}❌ {text}{Colors.ENDC}")
+    
+    def print_warning(self, text: str):
+        """Imprime mensaje de advertencia"""
+        print(f"{Colors.YELLOW}⚠️  {text}{Colors.ENDC}")
+    
+    def print_info(self, text: str):
+        """Imprime mensaje informativo"""
+        print(f"{Colors.BLUE}💡 {text}{Colors.ENDC}")
+    
+    def print_step(self, text: str):
+        """Imprime paso del proceso"""
+        print(f"{Colors.CYAN}📋 {text}{Colors.ENDC}")
+    
+    def print_substep(self, text: str):
+        """Imprime sub-paso del proceso"""
+        print(f"{Colors.CYAN}   ├─ {text}{Colors.ENDC}")
+
+    def show_main_menu(self) -> str:
+        """Muestra el menú principal del sistema"""
+        self.print_header("POBLADOR DE BASES DE DATOS POSTGRESQL")
+        
+        choices = [
+            questionary.Choice("🔗 Conectar a una base de datos", value="connect"),
+            questionary.Choice("⚙️  Gestionar conexiones guardadas", value="manage_connections"),
+            questionary.Choice("🚪 Salir del programa", value="exit")
+        ]
+        
+        action = questionary.select(
+            f"Selecciona una opción:",
+            choices=choices
+        ).ask()
+        
+        return action
+
     def manage_connections(self) -> str:
         """Gestiona conexiones guardadas y permite seleccionar una"""
-        print("\n" + "="*50)
-        print("🔗 GESTIÓN DE CONEXIONES A POSTGRESQL")
-        print("="*50)
+        self.print_header("GESTIÓN DE CONEXIONES A POSTGRESQL")
         
         # Mostrar conexiones guardadas si existen
         if self.saved_connections:
@@ -38,7 +108,7 @@ class CLIInterface:
             ])
             
             selected = questionary.select(
-                "Selecciona una conexión guardada:",
+                f"Selecciona una conexión guardada:",
                 choices=choices
             ).ask()
             
@@ -60,9 +130,9 @@ class CLIInterface:
         is_valid, message = self.db.validate_connection(connection_string)
         if is_valid:
             self.analyzer = SchemaAnalyzer(self.db)
-            print(f"✅ {message}")
+            self.print_success(message)
         else:
-            print(f"❌ {message}")
+            self.print_error(message)
             raise ConnectionError(f"No se pudo establecer la conexión: {message}")
     
     def _manage_saved_connections(self):
@@ -86,7 +156,7 @@ class CLIInterface:
                 ]
             
             action = questionary.select(
-                "Gestionar conexiones guardadas:",
+                f"Gestionar conexiones guardadas:",
                 choices=choices
             ).ask()
             
@@ -99,12 +169,12 @@ class CLIInterface:
                 if questionary.confirm(f"¿Eliminar la conexión '{action}'?").ask():
                     self.config.delete_connection(action)
                     self.saved_connections = self.config.get_connections()
-                    print(f"✅ Conexión '{action}' eliminada")
+                    self.print_success(f"Conexión '{action}' eliminada")
     
     def _save_current_connection(self):
         """Guarda la conexión actual"""
         name = questionary.text(
-            "Nombre para esta conexión:",
+            f"Nombre para esta conexión:",
             validate=lambda x: len(x) > 0 and x not in self.saved_connections
         ).ask()
         
@@ -113,37 +183,35 @@ class CLIInterface:
                 connection_string = self.current_connection_string
             else:
                 connection_string = questionary.text(
-                    "String de conexión a guardar:",
+                    f"String de conexión a guardar:",
                     default="postgresql://postgres:12345678@localhost:5432/postgres"
                 ).ask()
             
             if connection_string:
                 self.config.save_connection(name, connection_string)
                 self.saved_connections = self.config.get_connections()
-                print(f"✅ Conexión '{name}' guardada")
+                self.print_success(f"Conexión '{name}' guardada")
     
     def get_connection_string(self) -> str:
         """Solicita y valida el string de conexión"""
-        print("\n" + "="*50)
-        print("🔗 CONFIGURACIÓN DE CONEXIÓN A POSTGRESQL")
-        print("="*50)
+        self.print_header("CONFIGURACIÓN DE CONEXIÓN A POSTGRESQL")
         
         while True:
             connection_string = questionary.text(
-                "Ingresa el string de conexión:",
+                f"Ingresa el string de conexión:",
                 default="postgresql://postgres:12345678@localhost:5432/postgres",
                 instruction="(formato: postgresql://usuario:contraseña@host:puerto/base_datos)"
             ).ask()
             
             if not connection_string:
-                print("❌ Debes ingresar un string de conexión")
+                self.print_error("Debes ingresar un string de conexión")
                 continue
             
-            print("🔌 Validando conexión...")
+            self.print_info("Validando conexión...")
             is_valid, message = self.db.validate_connection(connection_string)
-            print(message)
             
             if is_valid:
+                self.print_success(message)
                 self.current_connection_string = connection_string
                 self.analyzer = SchemaAnalyzer(self.db)
                 
@@ -153,21 +221,22 @@ class CLIInterface:
                 
                 return connection_string
             else:
+                self.print_error(message)
                 if not questionary.confirm("¿Quieres intentar con otro string de conexión?").ask():
-                    print("👋 Saliendo del programa...")
+                    self.print_info("Saliendo del programa...")
                     exit()
     
     def _save_connection_after_test(self, connection_string: str):
         """Guarda una conexión después de validarla"""
         name = questionary.text(
-            "Nombre para esta conexión:",
+            f"Nombre para esta conexión:",
             validate=lambda x: len(x) > 0 and x not in self.saved_connections
         ).ask()
         
         if name:
             self.config.save_connection(name, connection_string)
             self.saved_connections = self.config.get_connections()
-            print(f"✅ Conexión '{name}' guardada")
+            self.print_success(f"Conexión '{name}' guardada")
     
     def select_table(self) -> str:
         """Permite seleccionar una tabla de la base de datos"""
@@ -176,7 +245,7 @@ class CLIInterface:
             if not self.db.connection or self.db.connection.closed:
                 raise ConnectionError("No hay conexión activa a la base de datos")
             
-            print("\n📊 CARGANDO TABLAS DISPONIBLES...")
+            self.print_step("CARGANDO TABLAS DISPONIBLES...")
             
             # Obtener todas las tablas
             self.db.cursor.execute("""
@@ -189,21 +258,27 @@ class CLIInterface:
             tables = [row[0] for row in self.db.cursor.fetchall()]
             
             if not tables:
-                print("❌ No se encontraron tablas en la base de datos")
+                self.print_error("No se encontraron tablas en la base de datos")
                 exit()
             
-            print(f"✅ Se encontraron {len(tables)} tablas")
+            self.print_success(f"Se encontraron {len(tables)} tablas")
+            
+            # Crear choices sin colores en los textos de las opciones
+            table_choices = [
+                questionary.Choice(title=f"📊 {table}", value=table) 
+                for table in tables
+            ]
             
             selected_table = questionary.select(
-                "Selecciona la tabla a poblar:",
-                choices=tables,
+                f"Selecciona la tabla a poblar:",
+                choices=table_choices,
                 instruction="(Usa ↑↓ para navegar, Enter para seleccionar)"
             ).ask()
             
             return selected_table
             
         except Exception as e:
-            print(f"❌ Error obteniendo tablas: {e}")
+            self.print_error(f"Error obteniendo tablas: {e}")
             exit()
     
     def get_insert_count(self) -> int:
@@ -212,7 +287,7 @@ class CLIInterface:
         default_count = app_config['defaults']['record_count']
         
         count = questionary.text(
-            "¿Cuántos registros quieres insertar?",
+            f"¿Cuántos registros quieres insertar?",
             default=str(default_count),
             validate=lambda x: x.isdigit() and int(x) > 0 and int(x) <= 100000
         ).ask()
@@ -222,13 +297,13 @@ class CLIInterface:
     def select_columns(self, table_name: str) -> List[str]:
         """Permite al usuario seleccionar qué columnas poblar, excluyendo IDs auto-incrementales"""
         try:
-            print(f"\n📋 CARGANDO COLUMNAS DE: {table_name}")
+            self.print_step(f"CARGANDO COLUMNAS DE: {table_name}")
             
             # Obtener información de columnas
             columns_info = self.db.get_table_columns(table_name)
             
             if not columns_info:
-                print("❌ No se encontraron columnas en la tabla")
+                self.print_error("No se encontraron columnas en la tabla")
                 return []
             
             # Identificar columnas auto-incrementales y claves primarias para excluirlas
@@ -264,7 +339,7 @@ class CLIInterface:
                     checked = True
                     note = ""
                 
-                # Formatear información de la columna
+                # Formatear información de la columna (sin colores en el texto de la opción)
                 nullable_text = "NULL" if is_nullable == 'YES' else "NOT NULL"
                 length_text = f"({max_length})" if max_length else ""
                 default_text = f" [DEFAULT: {default}]" if default else ""
@@ -280,37 +355,36 @@ class CLIInterface:
                 )
             
             if auto_increment_columns:
-                print(f"💡 Columnas auto-incrementales detectadas y excluidas: {', '.join(auto_increment_columns)}")
-                print("   Estas columnas se generan automáticamente por la base de datos")
+                self.print_info(f"Columnas auto-incrementales detectadas y excluidas: {', '.join(auto_increment_columns)}")
+                self.print_substep("Estas columnas se generan automáticamente por la base de datos")
             
             # Permitir al usuario seleccionar columnas
             selected = questionary.checkbox(
-                "Selecciona las columnas a poblar:",
+                f"{Colors.CYAN}Selecciona las columnas a poblar:{Colors.ENDC}",
                 choices=column_choices,
                 instruction="(Usa espacio para seleccionar, Enter para confirmar)"
             ).ask()
             
             if not selected:
-                print("❌ Debes seleccionar al menos una columna")
+                self.print_error("Debes seleccionar al menos una columna")
                 return self.select_columns(table_name)
             
             # Filtrar columnas auto-incrementales (por si el usuario las incluyó manualmente)
             final_selected = [col for col in selected if col not in auto_increment_columns]
             
             if len(final_selected) != len(selected):
-                print(f"💡 Se excluyeron {len(selected) - len(final_selected)} columnas auto-incrementales")
+                self.print_info(f"Se excluyeron {len(selected) - len(final_selected)} columnas auto-incrementales")
             
-            print(f"✅ Columnas seleccionadas: {len(final_selected)}")
+            self.print_success(f"Columnas seleccionadas: {len(final_selected)}")
             return final_selected
             
         except Exception as e:
-            print(f"❌ Error obteniendo columnas: {e}")
+            self.print_error(f"Error obteniendo columnas: {e}")
             return []
     
     def configure_column_data(self, table_name: str, selected_columns: List[str]) -> Dict[str, Dict]:
         """Permite configurar cómo generar datos para cada columna"""
-        print(f"\n⚙️  CONFIGURACIÓN DE DATOS PARA COLUMNAS")
-        print("-" * 50)
+        self.print_header("CONFIGURACIÓN DE DATOS PARA COLUMNAS")
         
         column_configs = {}
         columns_info = self.db.get_table_columns(table_name)
@@ -325,9 +399,9 @@ class CLIInterface:
             is_nullable = col_info[2]
             max_length = col_info[4]
             
-            print(f"\n📝 Configurando: {col_name} ({data_type})")
+            self.print_step(f"Configurando: {Colors.CYAN}{col_name}{Colors.ENDC} ({Colors.BLUE}{data_type}{Colors.ENDC})")
             
-            # Opciones de generación basadas en el tipo de dato REAL de PostgreSQL
+            # Opciones de generación basadas en el tipo de dato (sin colores en los textos de opciones)
             if 'int' in data_type:
                 choices = [
                     questionary.Choice("Números aleatorios", value="random"),
@@ -358,7 +432,7 @@ class CLIInterface:
                 ]
             
             generation_type = questionary.select(
-                "Tipo de generación:",
+                f"Tipo de generación para {col_name}:",
                 choices=choices
             ).ask()
             
@@ -373,25 +447,25 @@ class CLIInterface:
             if generation_type == "fixed":
                 if 'int' in data_type:
                     fixed_value = questionary.text(
-                        "Valor fijo (número):",
+                        f"Valor fijo (número) para {col_name}:",
                         validate=lambda x: x.isdigit()
                     ).ask()
                     config['fixed_value'] = int(fixed_value)
                 elif 'bool' in data_type:
-                    fixed_value = questionary.confirm("¿Valor True?").ask()
+                    fixed_value = questionary.confirm(f"¿Valor True para {col_name}?").ask()
                     config['fixed_value'] = fixed_value
                 elif 'date' in data_type or 'time' in data_type:
                     fixed_value = questionary.text(
-                        "Valor fijo (formato YYYY-MM-DD para fecha, HH:MM:SS para tiempo):"
+                        f"Valor fijo para {col_name} (formato YYYY-MM-DD para fecha, HH:MM:SS para tiempo):"
                     ).ask()
                     config['fixed_value'] = fixed_value
                 else:
-                    fixed_value = questionary.text("Valor fijo:").ask()
+                    fixed_value = questionary.text(f"Valor fijo para {col_name}:").ask()
                     config['fixed_value'] = fixed_value
             
             elif generation_type == "sequence" and 'int' in data_type:
                 start_value = questionary.text(
-                    "Valor inicial:",
+                    f"Valor inicial para secuencia de {col_name}:",
                     default="1",
                     validate=lambda x: x.isdigit()
                 ).ask()
@@ -403,12 +477,11 @@ class CLIInterface:
     
     def analyze_and_confirm(self, table_name: str, record_count: int, selected_columns: List[str]) -> bool:
         """Analiza la tabla y muestra información al usuario"""
-        print(f"\n🔍 ANALIZANDO TABLA: {table_name}")
-        print("-" * 40)
+        self.print_header(f"ANALIZANDO TABLA: {table_name}")
         
         # Verificar que la tabla existe
         if not self.db.table_exists(table_name):
-            print(f"❌ La tabla '{table_name}' no existe")
+            self.print_error(f"La tabla '{table_name}' no existe")
             return False
         
         # Validar restricciones de claves foráneas
@@ -417,32 +490,33 @@ class CLIInterface:
         
         # Si hay tablas relacionadas vacías, priorizar su población
         if empty_related_tables:
-            print(f"\n🚨 TABLAS RELACIONADAS VACÍAS DETECTADAS:")
+            self.print_error("TABLAS RELACIONADAS VACÍAS DETECTADAS:")
             for empty_table in empty_related_tables:
-                print(f"   ⚠️  {empty_table} - VACÍA (necesita datos primero)")
+                self.print_substep(f"{Colors.RED}⚠️  {empty_table} - VACÍA (necesita datos primero){Colors.ENDC}")
             
-            print(f"\n💡 RECOMENDACIÓN:")
-            print(f"   Debes poblar estas tablas en el siguiente orden:")
+            self.print_info("RECOMENDACIÓN:")
+            self.print_substep("Debes poblar estas tablas en el siguiente orden:")
             
             priority_order = validator.get_population_priority(table_name)
             for i, tbl in enumerate(priority_order, 1):
-                print(f"   {i}. {tbl}")
+                color = Colors.RED if tbl == priority_order[0] else Colors.YELLOW
+                self.print_substep(f"{color}  {i}. {tbl}{Colors.ENDC}")
             
-            print(f"\n📋 ACCIÓN REQUERIDA:")
-            print(f"   1. Poblar primero: {priority_order[0]}")
-            print(f"   2. Luego poblar: {table_name}")
+            self.print_info("ACCIÓN REQUERIDA:")
+            self.print_substep(f"1. Poblar primero: {Colors.RED}{priority_order[0]}{Colors.ENDC}")
+            self.print_substep(f"2. Luego poblar: {Colors.CYAN}{table_name}{Colors.ENDC}")
             
             if questionary.confirm(f"¿Quieres cambiar y poblar '{priority_order[0]}' primero?").ask():
                 # Cambiar a la tabla prioritaria
                 return self.switch_to_priority_table(priority_order[0], table_name)
             else:
-                print("❌ No se puede continuar sin poblar las tablas relacionadas vacías")
+                self.print_error("No se puede continuar sin poblar las tablas relacionadas vacías")
                 return False
         
         # Mostrar columnas seleccionadas
-        print(f"📋 Columnas a poblar ({len(selected_columns)}):")
+        self.print_step(f"Columnas a poblar ({len(selected_columns)}):")
         for col_name in selected_columns:
-            print(f"   ├─ {col_name}")
+            self.print_substep(f"{Colors.CYAN}{col_name}{Colors.ENDC}")
         
         # Obtener información completa de columnas para análisis
         columns_info = self.db.get_table_columns(table_name)
@@ -453,23 +527,24 @@ class CLIInterface:
         relevant_relationships = [rel for rel in all_relationships if rel['column'] in selected_columns]
         
         if relevant_relationships:
-            print(f"\n🔗 Relaciones encontradas en columnas seleccionadas:")
+            self.print_step("Relaciones encontradas en columnas seleccionadas:")
             for rel in relevant_relationships:
                 has_data, data_count = self.analyzer.check_foreign_table_data(rel['foreign_table'])
-                status = "✅ Con datos" if has_data else "⚠️  VACÍA"
-                print(f"   ├─ {rel['column']} → {rel['foreign_table']}.{rel['foreign_column']}")
-                print(f"   │  Tipo: {rel['relationship_type']} - {status} ({data_count} registros)")
+                status_color = Colors.GREEN if has_data else Colors.RED
+                status_text = "Con datos" if has_data else "VACÍA"
+                self.print_substep(f"{Colors.CYAN}{rel['column']}{Colors.ENDC} → {Colors.BLUE}{rel['foreign_table']}.{rel['foreign_column']}{Colors.ENDC}")
+                self.print_substep(f"  Tipo: {rel['relationship_type']} - {status_color}{status_text}{Colors.ENDC} ({data_count} registros)")
         else:
-            print(f"\n🔗 No se encontraron relaciones foráneas en las columnas seleccionadas")
+            self.print_info("No se encontraron relaciones foráneas en las columnas seleccionadas")
         
         # Mostrar resumen
         current_count = self.analyzer.get_table_row_count(table_name)
-        print(f"\n📊 RESUMEN:")
-        print(f"   ├─ Tabla: {table_name}")
-        print(f"   ├─ Columnas a poblar: {len(selected_columns)}")
-        print(f"   ├─ Registros actuales: {current_count}")
-        print(f"   ├─ Registros a insertar: {record_count}")
-        print(f"   ╰─ Total después: {current_count + record_count}")
+        self.print_header("RESUMEN DE OPERACIÓN")
+        self.print_substep(f"Tabla: {Colors.CYAN}{table_name}{Colors.ENDC}")
+        self.print_substep(f"Columnas a poblar: {Colors.GREEN}{len(selected_columns)}{Colors.ENDC}")
+        self.print_substep(f"Registros actuales: {Colors.BLUE}{current_count}{Colors.ENDC}")
+        self.print_substep(f"Registros a insertar: {Colors.YELLOW}{record_count}{Colors.ENDC}")
+        self.print_substep(f"Total después: {Colors.GREEN}{current_count + record_count}{Colors.ENDC}")
         
         # Preguntar si quiere continuar
         should_continue = questionary.confirm(
@@ -478,7 +553,7 @@ class CLIInterface:
         
         if not should_continue:
             # Si el usuario dice que NO, preguntar qué quiere hacer
-            print(f"\n🔄 Operación cancelada para la tabla '{table_name}'")
+            self.print_warning(f"Operación cancelada para la tabla '{table_name}'")
             
             choices = [
                 questionary.Choice(title="🔄 Reconfigurar esta tabla", value="reconfigure"),
@@ -488,7 +563,7 @@ class CLIInterface:
             ]
             
             action = questionary.select(
-                "¿Qué quieres hacer ahora?",
+                f"¿Qué quieres hacer ahora?",
                 choices=choices
             ).ask()
             
@@ -505,14 +580,14 @@ class CLIInterface:
                 # Devolver False para indicar que no continuar y volver al menú principal
                 return False
             else:  # exit
-                print("👋 ¡Hasta pronto!")
+                self.print_info("¡Hasta pronto!")
                 exit()
         
         return should_continue
 
     def _reconfigure_table(self, table_name: str) -> bool:
         """Permite reconfigurar la misma tabla con nuevos parámetros"""
-        print(f"\n🔄 RECONFIGURANDO TABLA: {table_name}")
+        self.print_header(f"RECONFIGURANDO TABLA: {table_name}")
         
         # Permitir cambiar las columnas seleccionadas
         selected_columns = self.select_columns(table_name)
@@ -533,7 +608,7 @@ class CLIInterface:
     
     def switch_to_priority_table(self, priority_table: str, original_table: str) -> bool:
         """Cambia a poblar la tabla prioritaria primero"""
-        print(f"\n🔄 CAMBIANDO A TABLA PRIORITARIA: {priority_table}")
+        self.print_header(f"CAMBIANDO A TABLA PRIORITARIA: {priority_table}")
         
         # Preguntar si quiere configurar columnas para la tabla prioritaria
         selected_columns = self.select_columns(priority_table)
@@ -551,7 +626,7 @@ class CLIInterface:
         is_valid, warnings = validator.validate_table_structure(priority_table)
         
         if not is_valid:
-            print("❌ No se puede continuar debido a errores de validación")
+            self.print_error("No se puede continuar debido a errores de validación")
             return False
         
         # Configuración de inserción
@@ -559,7 +634,7 @@ class CLIInterface:
         
         # Análisis y confirmación
         if not self.analyze_and_confirm(priority_table, record_count, selected_columns):
-            print("❌ Operación cancelada por el usuario")
+            self.print_error("Operación cancelada por el usuario")
             return False
         
         # Poblar la tabla prioritaria
@@ -575,8 +650,8 @@ class CLIInterface:
         )
         
         if success_count > 0:
-            print(f"\n✅ Tabla '{priority_table}' poblada exitosamente con {success_count} registros")
-            print(f"💡 Ahora puedes poblar la tabla original: {original_table}")
+            self.print_success(f"Tabla '{priority_table}' poblada exitosamente con {success_count} registros")
+            self.print_info(f"Ahora puedes poblar la tabla original: {original_table}")
             
             if questionary.confirm(f"¿Quieres poblar '{original_table}' ahora?").ask():
                 # Volver a la tabla original
@@ -589,21 +664,19 @@ class CLIInterface:
         # Limpiar consola para mostrar solo información esencial
         os.system('cls' if os.name == 'nt' else 'clear')
         
-        print(f"\n🎯 CONFIRMACIÓN FINAL")
-        print("=" * 40)
-        print(f"📊 Tabla: {table_name}")
-        print(f"🔢 Registros: {record_count}")
+        self.print_header("CONFIRMACIÓN FINAL")
+        self.print_substep(f"Tabla: {Colors.CYAN}{table_name}{Colors.ENDC}")
+        self.print_substep(f"Registros: {Colors.YELLOW}{record_count}{Colors.ENDC}")
         
         if relationships:
-            print(f"🔗 Relaciones: {len(relationships)} encontradas")
+            self.print_substep(f"Relaciones: {Colors.GREEN}{len(relationships)} encontradas{Colors.ENDC}")
         
         app_config = self.config.get_config()
         batch_size = app_config['defaults']['batch_size']
-        print(f"📦 Tamaño de lote: {batch_size}")
-        print("=" * 40)
+        self.print_substep(f"Tamaño de lote: {Colors.BLUE}{batch_size}{Colors.ENDC}")
         
         return questionary.confirm(
-            "¿Ejecutar la población de datos?",
+            f"¿Ejecutar la población de datos?",
             default=True
         ).ask()
     
@@ -620,7 +693,7 @@ class CLIInterface:
         ]
         
         option = questionary.select(
-            "Selecciona una opción de exportación:",
+            f"Selecciona una opción de exportación:",
             choices=choices
         ).ask()
         
@@ -655,7 +728,7 @@ class CLIInterface:
         }
         
         file_path = questionary.text(
-            "Ruta para guardar la configuración:",
+            f"Ruta para guardar la configuración:",
             default=f"./{table_name}_config.json"
         ).ask()
         
@@ -663,22 +736,22 @@ class CLIInterface:
             try:
                 with open(file_path, 'w', encoding='utf-8') as f:
                     json.dump(config_data, f, indent=2, ensure_ascii=False)
-                print(f"✅ Configuración exportada a {file_path}")
+                self.print_success(f"Configuración exportada a {file_path}")
                 
                 # Mostrar resumen de lo exportado
-                print(f"\n📁 RESUMEN DE EXPORTACIÓN:")
-                print(f"   ├─ Tabla: {table_name}")
-                print(f"   ├─ Columnas: {len(selected_columns)} configuradas")
-                print(f"   ├─ Registros: {record_count}")
-                print(f"   ╰─ Archivo: {file_path}")
+                self.print_header("RESUMEN DE EXPORTACIÓN")
+                self.print_substep(f"Tabla: {Colors.CYAN}{table_name}{Colors.ENDC}")
+                self.print_substep(f"Columnas: {Colors.GREEN}{len(selected_columns)} configuradas{Colors.ENDC}")
+                self.print_substep(f"Registros: {Colors.YELLOW}{record_count}{Colors.ENDC}")
+                self.print_substep(f"Archivo: {Colors.BLUE}{file_path}{Colors.ENDC}")
                 
             except Exception as e:
-                print(f"❌ Error exportando configuración: {e}")
+                self.print_error(f"Error exportando configuración: {e}")
     
     def _export_sql_script(self, table_name: str, record_count: int, selected_columns: List[str], column_configs: Dict):
         """Exporta un script SQL reproducible"""
         file_path = questionary.text(
-            "Ruta para guardar el script SQL:",
+            f"Ruta para guardar el script SQL:",
             default=f"./{table_name}_population_script.sql"
         ).ask()
         
@@ -711,15 +784,15 @@ class CLIInterface:
                     placeholders = ", ".join(["%s"] * len(selected_columns))
                     f.write(f"-- INSERT INTO {table_name} ({columns_str}) VALUES ({placeholders});\n")
                 
-                print(f"✅ Script SQL exportado a {file_path}")
-                print(f"📝 El script contiene la configuración para reproducir esta población")
+                self.print_success(f"Script SQL exportado a {file_path}")
+                self.print_info("El script contiene la configuración para reproducir esta población")
                 
             except Exception as e:
-                print(f"❌ Error exportando script SQL: {e}")
+                self.print_error(f"Error exportando script SQL: {e}")
     
     def _export_sample_data(self, table_name: str, selected_columns: List[str]):
         """Exporta datos de ejemplo de la tabla"""
-        print("🔄 Preparando datos de ejemplo para exportación...")
+        self.print_info("Preparando datos de ejemplo para exportación...")
         
         try:
             # Obtener algunos registros de ejemplo de la tabla
@@ -729,25 +802,25 @@ class CLIInterface:
             sample_data = self.db.cursor.fetchall()
             
             if sample_data:
-                print(f"✅ Se encontraron {len(sample_data)} registros de ejemplo")
-                print(f"📊 Muestra de datos:")
-                print(f"   Columnas: {', '.join(selected_columns)}")
+                self.print_success(f"Se encontraron {len(sample_data)} registros de ejemplo")
+                self.print_step("Muestra de datos:")
+                self.print_substep(f"Columnas: {', '.join(selected_columns)}")
                 for i, row in enumerate(sample_data[:3]):  # Mostrar solo 3 registros
-                    print(f"   Registro {i+1}: {row}")
+                    self.print_substep(f"Registro {i+1}: {row}")
                 
                 # Exportar a CSV
                 file_path = questionary.text(
-                    "Ruta para guardar el CSV:",
+                    f"Ruta para guardar el CSV:",
                     default=f"./{table_name}_sample_data.csv"
                 ).ask()
                 
                 if file_path:
                     self._export_to_csv(file_path, selected_columns, sample_data)
             else:
-                print("ℹ️ No se encontraron datos para exportar")
+                self.print_info("No se encontraron datos para exportar")
                 
         except Exception as e:
-            print(f"❌ Error obteniendo datos de ejemplo: {e}")
+            self.print_error(f"Error obteniendo datos de ejemplo: {e}")
     
     def _export_to_csv(self, file_path: str, columns: List[str], data: List):
         """Exporta datos a formato CSV"""
@@ -770,8 +843,8 @@ class CLIInterface:
                             formatted_row.append(str(value))
                     f.write(",".join(formatted_row) + "\n")
             
-            print(f"✅ Datos exportados a CSV: {file_path}")
-            print(f"📊 {len(data)} registros exportados")
+            self.print_success(f"Datos exportados a CSV: {file_path}")
+            self.print_info(f"{len(data)} registros exportados")
             
         except Exception as e:
-            print(f"❌ Error exportando CSV: {e}")
+            self.print_error(f"Error exportando CSV: {e}")
