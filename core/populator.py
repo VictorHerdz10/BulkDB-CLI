@@ -13,6 +13,8 @@ class DatabasePopulator:
         self.progress = progress_manager
         self.rel_manager = RelationshipManager(self.db, self.analyzer)
         self.column_configs = {}
+        self.generated_unique_values = {}
+        self.primary_keys_tracker = {}
     
     def set_column_configs(self, column_configs: Dict):
         """Establece la configuración de columnas"""
@@ -23,6 +25,11 @@ class DatabasePopulator:
         success_count = 0
         error_count = 0
         
+        # Reiniciar los trackers para cada población
+        self.generated_unique_values = {}
+        self.primary_keys_tracker = {}
+        self.generator.clear_cache()  # Limpiar caché del generador
+        
         # Mostrar panel de inicialización si hay ProgressManager
         if self.progress:
             self.progress.show_initialization_panel(table_name, record_count)
@@ -31,15 +38,23 @@ class DatabasePopulator:
         all_columns_info = self.db.get_table_columns(table_name)
         selected_columns_info = [col for col in all_columns_info if col[0] in selected_columns]
         
+        # Obtener información de la clave primaria
+        primary_key = self.db.get_primary_key(table_name)
+        print(f"🔑 Clave primaria detectada: {primary_key}")
+        
+        # Verificar si la clave primaria está en las columnas seleccionadas
+        if primary_key and primary_key not in selected_columns:
+            print(f"⚠️  Advertencia: La clave primaria '{primary_key}' no está en las columnas seleccionadas")
+        
         # Analizar relaciones avanzadas solo para columnas seleccionadas
         all_relationships = self.rel_manager.analyze_advanced_relationships(table_name)
         relevant_relationships = {col: rel for col, rel in all_relationships.items() if col in selected_columns}
         
         # Preparar datos para cada columna seleccionada
-        column_data = self._prepare_column_data(selected_columns_info, relevant_relationships, table_name)
+        column_data = self._prepare_column_data(selected_columns_info, relevant_relationships, table_name, primary_key)
         
         # Generar datos en lotes para mejor performance
-        batches = self._generate_data_in_batches(column_data, record_count, batch_size, table_name, selected_columns)
+        batches = self._generate_data_in_batches(column_data, record_count, batch_size, table_name, selected_columns, primary_key)
         
         # Insertar datos con barra de progreso mejorada
         total_batches = len(batches)
@@ -72,15 +87,46 @@ class DatabasePopulator:
         
         return success_count, error_count
     
-    def _prepare_column_data(self, columns_info: List, advanced_relationships: Dict, table_name: str) -> Dict[str, Any]:
+    def _prepare_column_data(self, columns_info: List, advanced_relationships: Dict, table_name: str, primary_key: str) -> Dict[str, Any]:
         """Prepara la configuración de datos para cada columna seleccionada"""
         column_data = {}
         
         for col_info in columns_info:
             col_name, data_type, is_nullable, default, max_length, numeric_precision, numeric_scale = col_info
             
+            # Verificar si es clave primaria
+            is_primary_key = col_name == primary_key
+            
+            print(f"🔍 Preparando columna: {col_name} (tipo: {data_type}, PK: {is_primary_key}, nullable: {is_nullable})")
+            
+            # Si es clave primaria autoincremental, saltar generación
+            if is_primary_key and default and 'nextval' in str(default):
+                print(f"   🔄 Columna {col_name} es autoincremental - se omitirá la generación")
+                column_data[col_name] = {
+                    'type': 'auto_increment',
+                    'skip_generation': True,
+                    'is_primary_key': True,
+                    'data_type': data_type,
+                    'is_nullable': is_nullable
+                }
+                continue
+            
+            # Si es clave primaria pero NO es autoincremental, debemos generar valores únicos
+            if is_primary_key:
+                print(f"   🔑 Columna {col_name} es clave primaria NO autoincremental - generando valores únicos")
+                column_data[col_name] = {
+                    'type': 'primary_key',
+                    'data_type': data_type,
+                    'is_nullable': is_nullable,
+                    'max_length': max_length,
+                    'is_primary_key': True,
+                    'requires_unique': True,
+                    'allow_null': False  # Las PK nunca pueden ser NULL
+                }
+                continue
+            
             # Obtener datos de ejemplo existentes para análisis
-            sample_data = self.db.get_column_sample_data(table_name, col_name, limit=5)
+            sample_data = self.db.get_column_sample_data(table_name, col_name, limit=10)
             
             # Verificar si es una relación foránea
             is_foreign_key = col_name in advanced_relationships
@@ -96,7 +142,9 @@ class DatabasePopulator:
                         'data_type': data_type,
                         'is_nullable': is_nullable,
                         'max_length': max_length,
-                        'sample_data': sample_data
+                        'sample_data': sample_data,
+                        'is_primary_key': False,
+                        'allow_null': is_nullable == 'YES'  # Solo permitir NULL si la columna es nullable
                     }
                 else:
                     column_data[col_name] = {
@@ -104,9 +152,14 @@ class DatabasePopulator:
                         'data_type': data_type,
                         'max_length': max_length,
                         'is_nullable': is_nullable,
-                        'sample_data': sample_data
+                        'sample_data': sample_data,
+                        'is_primary_key': False,
+                        'allow_null': is_nullable == 'YES'
                     }
             else:
+                # Verificar si tiene restricción única
+                is_unique = self._check_unique_constraint(table_name, col_name)
+                
                 # Aplicar configuración personalizada si existe
                 if col_name in self.column_configs:
                     config = self.column_configs[col_name]
@@ -116,6 +169,9 @@ class DatabasePopulator:
                         'max_length': max_length,
                         'is_nullable': is_nullable,
                         'sample_data': sample_data,
+                        'is_unique': is_unique,
+                        'is_primary_key': False,
+                        'allow_null': is_nullable == 'YES',
                         'config': config
                     }
                 else:
@@ -125,12 +181,32 @@ class DatabasePopulator:
                         'data_type': data_type,
                         'max_length': max_length,
                         'is_nullable': is_nullable,
-                        'sample_data': sample_data
+                        'sample_data': sample_data,
+                        'is_unique': is_unique,
+                        'is_primary_key': False,
+                        'allow_null': is_nullable == 'YES'
                     }
         
         return column_data
     
-    def _generate_data_in_batches(self, column_data: Dict, total_records: int, batch_size: int, table_name: str, selected_columns: List[str]) -> List[List[Dict]]:
+    def _check_unique_constraint(self, table_name: str, column_name: str) -> bool:
+        """Verifica si una columna tiene restricción única"""
+        try:
+            query = """
+                 SELECT COUNT(*) 
+                 FROM information_schema.table_constraints tc
+                 JOIN information_schema.key_column_usage kcu
+                     ON tc.constraint_name = kcu.constraint_name
+                 WHERE tc.table_name = %s 
+                     AND kcu.column_name = %s
+                     AND tc.constraint_type IN ('UNIQUE', 'PRIMARY KEY')
+            """
+            self.db.cursor.execute(query, (table_name, column_name))
+            return self.db.cursor.fetchone()[0] > 0
+        except psycopg2.Error:
+            return False
+    
+    def _generate_data_in_batches(self, column_data: Dict, total_records: int, batch_size: int, table_name: str, selected_columns: List[str], primary_key: str) -> List[List[Dict]]:
         """Genera datos en lotes para mejor performance"""
         batches = []
         records_generated = 0
@@ -146,7 +222,7 @@ class DatabasePopulator:
                     for i in range(current_batch_size):
                         record = {}
                         for col_name, col_config in column_data.items():
-                            record[col_name] = self._generate_column_value(col_config, col_name, i, records_generated + i)
+                            record[col_name] = self._generate_column_value(col_config, col_name, table_name, i, records_generated + i, primary_key)
                         batch.append(record)
                     
                     batches.append(batch)
@@ -162,7 +238,7 @@ class DatabasePopulator:
                 for i in range(current_batch_size):
                     record = {}
                     for col_name, col_config in column_data.items():
-                        record[col_name] = self._generate_column_value(col_config, col_name, i, records_generated + i)
+                        record[col_name] = self._generate_column_value(col_config, col_name, table_name, i, records_generated + i, primary_key)
                     batch.append(record)
                 
                 batches.append(batch)
@@ -171,11 +247,24 @@ class DatabasePopulator:
         
         return batches
     
-    def _generate_column_value(self, col_config: Dict, col_name: str, record_index: int, global_index: int) -> Any:
+    def _generate_column_value(self, col_config: Dict, col_name: str, table_name: str, record_index: int, global_index: int, primary_key: str) -> Any:
         """Genera un valor para una columna específica usando la configuración"""
-        # Considerar nulabilidad (10% de chance de NULL si es nullable)
-        if col_config['is_nullable'] == 'YES' and random.random() < 0.1:
+        # Saltar generación para autoincrement
+        if col_config.get('skip_generation'):
             return None
+        
+        # Si es clave primaria NO autoincremental, generar valor único secuencial
+        if col_config.get('is_primary_key') and not col_config.get('skip_generation'):
+            return self._generate_primary_key_value(col_config, col_name, table_name, global_index)
+        
+        # Para columnas que NO permiten NULL, siempre generar valor
+        if not col_config.get('allow_null', True):
+            # Generar siempre un valor válido para columnas NOT NULL
+            return self._generate_always_valid_value(col_config, col_name, table_name, global_index)
+        
+        # Para columnas únicas, usar valores únicos
+        if col_config.get('is_unique') or col_config.get('requires_unique'):
+            return self._generate_unique_value(col_config, col_name, table_name, global_index)
         
         # Aplicar configuración personalizada si existe
         if col_config['type'] == 'configured':
@@ -196,13 +285,134 @@ class DatabasePopulator:
             if col_config['values']:
                 return random.choice(col_config['values'])
         
-        # Generación normal
+        # Generación normal - USANDO LOS NUEVOS PARÁMETROS DEL GENERADOR
         return self.generator.generate_value(
-            col_config['data_type'],
-            col_name,
-            col_config.get('max_length'),
-            col_config.get('sample_data')
+            data_type=col_config['data_type'],
+            column_name=col_name,
+            max_length=col_config.get('max_length'),
+            sample_data=col_config.get('sample_data'),
+            table_name=table_name,
+            is_unique=col_config.get('is_unique', False),
+            existing_data=col_config.get('sample_data'),
+            is_primary_key=col_config.get('is_primary_key', False),
+            is_nullable=col_config.get('allow_null', True)
         )
+    
+    def _generate_always_valid_value(self, col_config: Dict, col_name: str, table_name: str, global_index: int) -> Any:
+        """Genera siempre un valor válido (nunca NULL) para columnas NOT NULL"""
+        max_attempts = 10
+        
+        for attempt in range(max_attempts):
+            # Generar valor usando el método normal CON TODOS LOS PARÁMETROS
+            value = self.generator.generate_value(
+                data_type=col_config['data_type'],
+                column_name=col_name,
+                max_length=col_config.get('max_length'),
+                sample_data=col_config.get('sample_data'),
+                table_name=table_name,
+                is_unique=col_config.get('is_unique', False),
+                existing_data=col_config.get('sample_data'),
+                is_primary_key=col_config.get('is_primary_key', False),
+                is_nullable=False  # Forzar a no ser NULL
+            )
+            
+            # Si el valor no es None, retornarlo
+            if value is not None:
+                return value
+            
+            # Si es None, intentar de nuevo
+            print(f"   ⚠️  Intento {attempt + 1}: Se generó NULL para columna NOT NULL '{col_name}', regenerando...")
+        
+        # Si después de varios intentos sigue siendo None, generar un valor por defecto
+        print(f"   🚨 No se pudo generar valor no-NULL para '{col_name}', usando valor por defecto")
+        return self._generate_fallback_value(col_config, col_name)
+    
+    def _generate_fallback_value(self, col_config: Dict, col_name: str) -> Any:
+        """Genera un valor de respaldo cuando no se puede generar uno válido"""
+        data_type = col_config['data_type'].lower()
+        
+        if 'int' in data_type:
+            return 1
+        elif 'bool' in data_type:
+            return True
+        elif 'char' in data_type or 'text' in data_type or 'varchar' in data_type:
+            return f"valor_{col_name}_{random.randint(1000, 9999)}"
+        elif 'date' in data_type or 'timestamp' in data_type:
+            from datetime import datetime
+            return datetime.now()
+        elif 'numeric' in data_type or 'decimal' in data_type:
+            return 0.0
+        else:
+            return f"default_{col_name}"
+    
+    def _generate_primary_key_value(self, col_config: Dict, col_name: str, table_name: str, global_index: int) -> Any:
+        """Genera valores únicos para claves primarias NO autoincrementales"""
+        # Para claves primarias, usar valores secuenciales únicos empezando desde 1
+        if 'int' in col_config['data_type']:
+            return global_index + 1  # Empezar desde 1
+        else:
+            # Para otros tipos de datos, generar valores únicos usando el generador
+            return self.generator.generate_value(
+                data_type=col_config['data_type'],
+                column_name=col_name,
+                max_length=col_config.get('max_length'),
+                sample_data=col_config.get('sample_data'),
+                table_name=table_name,
+                is_unique=True,
+                existing_data=col_config.get('sample_data'),
+                is_primary_key=True,
+                is_nullable=False
+            )
+    
+    def _generate_unique_value(self, col_config: Dict, col_name: str, table_name: str, global_index: int) -> Any:
+        """Genera valores únicos para columnas con restricción única"""
+        cache_key = f"{col_config['data_type']}_{col_name}"
+        
+        if cache_key not in self.generated_unique_values:
+            self.generated_unique_values[cache_key] = set()
+        
+        max_attempts = 100
+        for attempt in range(max_attempts):
+            value = self.generator.generate_value(
+                data_type=col_config['data_type'],
+                column_name=col_name,
+                max_length=col_config.get('max_length'),
+                sample_data=col_config.get('sample_data'),
+                table_name=table_name,
+                is_unique=True,
+                existing_data=col_config.get('sample_data'),
+                is_primary_key=col_config.get('is_primary_key', False),
+                is_nullable=col_config.get('allow_null', True)
+            )
+            
+            # Asegurar que el valor no sea None
+            if value is None:
+                value = self._generate_fallback_value(col_config, col_name)
+            
+            if value not in self.generated_unique_values[cache_key]:
+                self.generated_unique_values[cache_key].add(value)
+                return value
+        
+        # Si no se puede generar único, usar sufijo
+        base_value = self.generator.generate_value(
+            data_type=col_config['data_type'],
+            column_name=col_name,
+            max_length=col_config.get('max_length'),
+            sample_data=col_config.get('sample_data'),
+            table_name=table_name,
+            is_unique=False,
+            existing_data=col_config.get('sample_data'),
+            is_primary_key=col_config.get('is_primary_key', False),
+            is_nullable=col_config.get('allow_null', True)
+        )
+        
+        # Asegurar que el valor base no sea None
+        if base_value is None:
+            base_value = self._generate_fallback_value(col_config, col_name)
+        
+        unique_value = f"{base_value}_{global_index}"
+        self.generated_unique_values[cache_key].add(unique_value)
+        return unique_value
     
     def _insert_batch(self, table_name: str, batch: List[Dict], selected_columns: List[str]) -> Tuple[int, int]:
         """Inserta un lote de registros en la base de datos"""
