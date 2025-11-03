@@ -3,6 +3,7 @@ from typing import List, Dict, Any, Optional
 from core.database import DatabaseManager
 from core.schema_analyzer import SchemaAnalyzer
 from core.data_generator import DataGenerator
+from core.validators import DataValidator
 from utils.config import ConfigManager
 import os
 import json
@@ -362,6 +363,34 @@ class CLIInterface:
             print(f"❌ La tabla '{table_name}' no existe")
             return False
         
+        # Validar restricciones de claves foráneas
+        validator = DataValidator(self.db)
+        fk_valid, fk_warnings, empty_related_tables = validator.validate_foreign_key_constraints(table_name)
+        
+        # Si hay tablas relacionadas vacías, priorizar su población
+        if empty_related_tables:
+            print(f"\n🚨 TABLAS RELACIONADAS VACÍAS DETECTADAS:")
+            for empty_table in empty_related_tables:
+                print(f"   ⚠️  {empty_table} - VACÍA (necesita datos primero)")
+            
+            print(f"\n💡 RECOMENDACIÓN:")
+            print(f"   Debes poblar estas tablas en el siguiente orden:")
+            
+            priority_order = validator.get_population_priority(table_name)
+            for i, tbl in enumerate(priority_order, 1):
+                print(f"   {i}. {tbl}")
+            
+            print(f"\n📋 ACCIÓN REQUERIDA:")
+            print(f"   1. Poblar primero: {priority_order[0]}")
+            print(f"   2. Luego poblar: {table_name}")
+            
+            if questionary.confirm(f"¿Quieres cambiar y poblar '{priority_order[0]}' primero?").ask():
+                # Cambiar a la tabla prioritaria
+                return self._switch_to_priority_table(priority_order[0], table_name)
+            else:
+                print("❌ No se puede continuar sin poblar las tablas relacionadas vacías")
+                return False
+        
         # Mostrar columnas seleccionadas
         print(f"📋 Columnas a poblar ({len(selected_columns)}):")
         for col_name in selected_columns:
@@ -379,12 +408,9 @@ class CLIInterface:
             print(f"\n🔗 Relaciones encontradas en columnas seleccionadas:")
             for rel in relevant_relationships:
                 has_data, data_count = self.analyzer.check_foreign_table_data(rel['foreign_table'])
-                status = "✅ Con datos" if has_data else "⚠️  SIN DATOS"
+                status = "✅ Con datos" if has_data else "⚠️  VACÍA"
                 print(f"   ├─ {rel['column']} → {rel['foreign_table']}.{rel['foreign_column']}")
                 print(f"   │  Tipo: {rel['relationship_type']} - {status} ({data_count} registros)")
-                
-                if not has_data:
-                    print(f"   ╰─ ⚠️  La tabla {rel['foreign_table']} está vacía. Se generarán valores temporales.")
         else:
             print(f"\n🔗 No se encontraron relaciones foráneas en las columnas seleccionadas")
         
@@ -400,6 +426,59 @@ class CLIInterface:
         return questionary.confirm(
             f"¿Continuar con la inserción de {record_count} registros?"
         ).ask()
+    
+    def _switch_to_priority_table(self, priority_table: str, original_table: str) -> bool:
+        """Cambia a poblar la tabla prioritaria primero"""
+        print(f"\n🔄 CAMBIANDO A TABLA PRIORITARIA: {priority_table}")
+        
+        # Preguntar si quiere configurar columnas para la tabla prioritaria
+        selected_columns = self.select_columns(priority_table)
+        if not selected_columns:
+            return False
+        
+        # Configurar datos por columna (OPCIONAL)
+        if questionary.confirm("¿Quieres configurar cómo generar datos para cada columna?").ask():
+            column_configs = self.configure_column_data(priority_table, selected_columns)
+        else:
+            column_configs = {}
+        
+        # Validación avanzada para la tabla prioritaria
+        validator = DataValidator(self.db)
+        is_valid, warnings = validator.validate_table_structure(priority_table)
+        
+        if not is_valid:
+            print("❌ No se puede continuar debido a errores de validación")
+            return False
+        
+        # Configuración de inserción
+        record_count = self.get_insert_count()
+        
+        # Análisis y confirmación
+        if not self.analyze_and_confirm(priority_table, record_count, selected_columns):
+            print("❌ Operación cancelada por el usuario")
+            return False
+        
+        # Poblar la tabla prioritaria
+        from core.populator import DatabasePopulator
+        from cli.progress import ProgressManager
+        
+        progress = ProgressManager()
+        populator = DatabasePopulator(self.db, self.analyzer, self.generator, progress)
+        populator.set_column_configs(column_configs)
+        
+        success_count, error_count = populator.populate_table(
+            priority_table, record_count, selected_columns, 1000
+        )
+        
+        if success_count > 0:
+            print(f"\n✅ Tabla '{priority_table}' poblada exitosamente con {success_count} registros")
+            print(f"💡 Ahora puedes poblar la tabla original: {original_table}")
+            
+            if questionary.confirm(f"¿Quieres poblar '{original_table}' ahora?").ask():
+                # Volver a la tabla original
+                return self.analyze_and_confirm(original_table, record_count, [])
+        
+        return False
     
     def final_confirmation(self, table_name: str, record_count: int, relationships: Dict) -> bool:
         """Confirmación final antes de la inserción"""
