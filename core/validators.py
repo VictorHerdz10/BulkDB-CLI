@@ -73,9 +73,10 @@ class DataValidator:
         }
         return any(supported in data_type for supported in supported_types)
     
-    def validate_foreign_key_constraints(self, table_name: str) -> Tuple[bool, List[str]]:
-        """Valida restricciones de claves foráneas"""
+    def validate_foreign_key_constraints(self, table_name: str) -> Tuple[bool, List[str], List[str]]:
+        """Valida restricciones de claves foráneas y devuelve tablas vacías que deben poblarse primero"""
         warnings = []
+        empty_related_tables = []
         
         try:
             relationships = self._get_foreign_keys(table_name)
@@ -97,17 +98,94 @@ class DataValidator:
                 foreign_count = self.db.cursor.fetchone()[0]
                 
                 if foreign_count == 0:
-                    warnings.append(f"Tabla foránea '{foreign_table}' está vacía")
+                    warning_msg = f"Tabla foránea '{foreign_table}' está vacía y es necesaria para '{table_name}.{rel['column']}'"
+                    warnings.append(warning_msg)
+                    empty_related_tables.append(foreign_table)
                 
                 # Verificar si la columna foránea existe
                 foreign_columns = [col[0] for col in self.db.get_table_columns(foreign_table)]
                 if foreign_column not in foreign_columns:
                     warnings.append(f"Columna foránea '{foreign_column}' no existe en '{foreign_table}'")
             
-            return len(warnings) == 0, warnings
+            return len(warnings) == 0, warnings, empty_related_tables
             
         except psycopg2.Error as e:
-            return False, [f"Error validando claves foráneas: {e}"]
+            return False, [f"Error validando claves foráneas: {e}"], []
+    
+    def get_population_priority(self, table_name: str) -> List[str]:
+        """Obtiene el orden de prioridad para poblar tablas relacionadas"""
+        try:
+            # Obtener todas las tablas relacionadas que están vacías
+            all_tables = self._get_all_tables()
+            dependency_graph = self._build_dependency_graph()
+            
+            # Ordenar por dependencias
+            priority_order = self._topological_sort(dependency_graph, table_name)
+            
+            # Filtrar solo las que están vacías
+            empty_tables = []
+            for tbl in priority_order:
+                if tbl != table_name and self._is_table_empty(tbl):
+                   empty_tables.append(tbl)
+            
+            return empty_tables
+            
+        except psycopg2.Error:
+            return []
+    
+    def _get_all_tables(self) -> List[str]:
+        """Obtiene todas las tablas de la base de datos"""
+        try:
+            self.db.cursor.execute("""
+                SELECT table_name 
+                FROM information_schema.tables 
+                WHERE table_schema = 'public' 
+                AND table_type = 'BASE TABLE'
+            """)
+            return [row[0] for row in self.db.cursor.fetchall()]
+        except psycopg2.Error:
+            return []
+    
+    def _build_dependency_graph(self) -> Dict[str, List[str]]:
+        """Construye un grafo de dependencias entre tablas"""
+        graph = {}
+        all_tables = self._get_all_tables()
+        
+        for table in all_tables:
+            graph[table] = []
+            foreign_keys = self._get_foreign_keys(table)
+            
+            for fk in foreign_keys:
+                graph[table].append(fk['foreign_table'])
+        
+        return graph
+    
+    def _topological_sort(self, graph: Dict[str, List[str]], start_table: str) -> List[str]:
+        """Ordenamiento topológico para determinar prioridades"""
+        visited = set()
+        result = []
+        
+        def dfs(table):
+            if table not in visited:
+                visited.add(table)
+                for dependency in graph.get(table, []):
+                    dfs(dependency)
+                result.append(table)
+        
+        dfs(start_table)
+        return result[::-1]  # Invertir para obtener el orden correcto
+    
+    def _is_table_empty(self, table_name: str) -> bool:
+        """Verifica si una tabla está vacía"""
+        try:
+            query = sql.SQL("SELECT COUNT(*) FROM {}").format(
+                sql.Identifier(table_name)
+            )
+            self.db.cursor.execute(query)
+            count = self.db.cursor.fetchone()[0]
+            return count == 0
+        except psycopg2.Error:
+            return True
     
     def _get_foreign_keys(self, table_name: str) -> List[Dict[str, str]]:
         """Obtiene información de claves foráneas"""
