@@ -139,3 +139,21 @@ class DatabaseManager:
         if self.connection:
             self.connection.close()
             self.connection = None
+    
+    def check_existing_record(self, table_name: str, unique_fields: Dict[str, Any]) -> bool:
+        """Verifica si ya existe un registro con los mismos valores únicos"""
+        try:
+            conditions = []
+            values = []
+        
+            for field, value in unique_fields.items():
+                conditions.append(f"{field} = %s")
+                values.append(value)
+        
+            query = f"SELECT COUNT(*) FROM {table_name} WHERE {' AND '.join(conditions)}"
+            self.cursor.execute(query, values)
+            count = self.cursor.fetchone()[0]
+        
+            return count > 0
+        except psycopg2.Error:
+            return False
